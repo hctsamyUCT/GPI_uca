@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Hôte : 127.0.0.1:3306
--- Généré le : jeu. 27 fév. 2025 à 10:31
+-- Généré le : dim. 02 mars 2025 à 15:39
 -- Version du serveur : 9.1.0
 -- Version de PHP : 8.3.14
 
@@ -53,14 +53,19 @@ CREATE TABLE IF NOT EXISTS `appareils` (
 --
 
 INSERT INTO `appareils` (`id_appareil`, `type`, `modele`, `numero_serie`, `etat`, `id_marque`, `id_salle`, `date_ajout`, `supprime_le`) VALUES
+(94, 'Imprimante', 'LaserJet Pro M4044', 'HP-2024-001', 'En panne', 1, 3, '2025-02-13 07:38:15', NULL),
 (95, 'Projecteur', 'EB-1485Fi', 'EPSON-2024-001', 'En panne', 2, 10, '2025-02-13 07:38:15', NULL),
 (96, 'Projecteur', 'PIXMA TR46', 'CANON-2024-0', 'En panne', 3, 10, '2025-02-13 07:38:15', NULL),
+(97, 'Imprimante', 'MAXIFY GX7050', 'CANON-2024-002', 'En panne', 3, 15, '2025-02-13 07:38:15', NULL),
+(98, 'Projecteur', 'Predator GD711', 'ACER-2024-001', 'Operationnel', 5, NULL, '2025-02-13 07:38:15', NULL),
 (99, 'Projecteur', 'B250i', 'ACER-2024-002', 'En panne', 5, NULL, '2025-02-13 07:38:15', NULL),
-(100, 'Imprimante', 'MFC-L2750DW', 'BROTHER-2024-001', 'Operationnel', 4, 10, '2025-02-13 07:38:15', NULL),
+(100, 'Imprimante', 'MFC-L2750DW', 'BROTHER-2024-001', 'En panne', 4, 10, '2025-02-13 07:38:15', NULL),
 (101, 'Imprimante', 'HL-L6400DW', 'BROTHER-2024-002', 'Operationnel', 4, 10, '2025-02-13 07:38:15', NULL),
 (102, 'Projecteur', 'NP-PA653X', 'NEC-2024-001', 'En panne', 7, 4, '2025-02-13 07:38:15', NULL),
 (103, 'Projecteur', 'NP-ME403X', 'NEC-2024-002', 'Operationnel', 7, 5, '2025-02-13 07:38:15', NULL),
 (104, 'Projecteur', 'S5220Q', 'DELL-2024-001', 'Operationnel', 6, 11, '2025-02-13 07:38:15', NULL),
+(105, 'Projecteur', 'P519HL', 'DELL-2024-002', 'En panne', 6, 12, '2025-02-13 07:38:15', NULL),
+(106, 'Imprimante', 'p2bd-skz', '12U3', 'En panne', 3, 12, '2025-02-17 07:01:56', NULL),
 (107, 'Imprimante', 'ttytf', 'hgfdlki', 'Operationnel', 8, NULL, '2025-02-18 11:05:17', NULL),
 (108, 'Projecteur', 'jjsd', 'sjjzls', 'Operationnel', 9, 2, '2025-02-19 02:04:18', NULL);
 
@@ -130,18 +135,7 @@ CREATE TABLE IF NOT EXISTS `archives_appareils` (
   `date_archive` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id_archive`),
   KEY `numero_serie` (`numero_serie`)
-) ENGINE=InnoDB AUTO_INCREMENT=84 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
---
--- Déchargement des données de la table `archives_appareils`
---
-
-INSERT INTO `archives_appareils` (`id_archive`, `id_appareil`, `type`, `modele`, `numero_serie`, `etat`, `id_marque`, `nom_marque`, `id_salle`, `nom_salle`, `date_ajout`, `date_archive`) VALUES
-(79, 94, 'Imprimante', 'LaserJet Pro M4044', 'HP-2024-001', 'En panne', 1, 'HP', 3, 'Salle Informatique', '2025-02-13 07:38:15', '2025-02-18 10:47:49'),
-(80, 97, 'Imprimante', 'MAXIFY GX7050', 'CANON-2024-002', 'En panne', 3, 'Canon', 15, 'Comptabilité', '2025-02-13 07:38:15', '2025-02-18 11:04:07'),
-(81, 98, 'Projecteur', 'Predator GD711', 'ACER-2024-001', 'Operationnel', 5, 'Acer', NULL, NULL, '2025-02-13 07:38:15', '2025-02-19 01:36:46'),
-(82, 106, 'Imprimante', 'p2bd-skz', '12U3', 'En panne', 3, 'Canon', 12, 'Salle d\'Etude 6', '2025-02-17 07:01:56', '2025-02-25 20:57:14'),
-(83, 105, 'Projecteur', 'P519HL', 'DELL-2024-002', 'En panne', 6, 'Dell', 12, 'Salle d\'Etude 6', '2025-02-13 07:38:15', '2025-02-25 21:04:35');
+) ENGINE=InnoDB AUTO_INCREMENT=104 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
 
@@ -172,9 +166,7 @@ CREATE TABLE IF NOT EXISTS `archives_peripherique` (
 INSERT INTO `archives_peripherique` (`id_archive`, `id_peripherique`, `type`, `id_marque`, `nom_marque`, `numero_inventaire`, `etat`, `date_ajout`, `supprime_le`, `est_affecte`, `date_archive`) VALUES
 (8, 8, 'Clavier', 4, 'Brother', 'bduaibdiazd', 'Operationnel', '2025-02-19 15:59:26', NULL, 0, '2025-02-19 14:59:29'),
 (9, 22, 'Ecran', 1, 'HP', 't323nd', 'Operationnel', '2025-02-20 03:35:04', NULL, 0, '2025-02-25 20:55:11'),
-(10, 14, 'Souris', 6, 'Dell', 'a1023', 'Operationnel', '2025-02-20 03:31:18', NULL, 0, '2025-02-25 21:07:35'),
-(11, 19, 'Ecran', 1, 'HP', 'a4end', 'Operationnel', '2025-02-20 03:34:09', NULL, 0, '2025-02-25 21:24:24'),
-(12, 9, 'Clavier', 5, 'Acer', 'xcfd', 'Operationnel', '2025-02-19 16:14:42', NULL, 0, '2025-02-26 07:53:38');
+(10, 14, 'Souris', 6, 'Dell', 'a1023', 'Operationnel', '2025-02-20 03:31:18', NULL, 0, '2025-02-25 21:07:35');
 
 -- --------------------------------------------------------
 
@@ -200,16 +192,14 @@ CREATE TABLE IF NOT EXISTS `archives_unite` (
   `est_affecte` tinyint(1) DEFAULT NULL,
   `date_archive` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id_archive`)
-) ENGINE=InnoDB AUTO_INCREMENT=14 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=17 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 --
 -- Déchargement des données de la table `archives_unite`
 --
 
 INSERT INTO `archives_unite` (`id_archive`, `id_unite`, `numero_inventaire`, `ram`, `processeur`, `disque_dur_1_type`, `disque_dur_1_capacite`, `disque_dur_2_type`, `disque_dur_2_capacite`, `etat`, `date_achat`, `date_ajout`, `supprime_le`, `est_affecte`, `date_archive`) VALUES
-(10, 10, 'GZZVHZH', '16 GB', 'INTEL_CORE_I3', 'SSD', '120 GB', NULL, NULL, 'Operationnel', '2025-02-19', '2025-02-19 16:05:40', NULL, 0, '2025-02-19 15:05:55'),
-(12, 11, 'a1aa', '4 GB', 'INTEL_CORE_I3', 'HDD', '120 GB', NULL, NULL, 'En panne', NULL, '2025-02-19 16:08:44', NULL, 0, '2025-02-25 20:53:04'),
-(13, 12, 'b2bb', '2 GB', 'INTEL_CORE_I5', 'SSD', '70 GB', NULL, NULL, 'Operationnel', NULL, '2025-02-19 16:11:58', NULL, 0, '2025-02-25 21:07:58');
+(16, 13, 'b3bb', '2 GB', 'INTEL_CORE_I3', 'SSD', '70 GB', NULL, NULL, 'Operationnel', NULL, '2025-02-19 16:13:43', NULL, 1, '2025-03-02 09:04:27');
 
 -- --------------------------------------------------------
 
@@ -228,16 +218,15 @@ CREATE TABLE IF NOT EXISTS `interventions` (
   PRIMARY KEY (`id_intervention`),
   KEY `id_ticket` (`id_ticket`),
   KEY `id_user` (`id_user`)
-) ENGINE=InnoDB AUTO_INCREMENT=13 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=17 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
 -- Déchargement des données de la table `interventions`
 --
 
 INSERT INTO `interventions` (`id_intervention`, `id_ticket`, `id_user`, `description`, `date_intervention`, `action_effectuee`) VALUES
-(10, 28, 1, 'clavier defecteux', '2025-02-26 07:52:35', 'remplacement'),
-(11, 28, 1, 'carte mere morte', '2025-02-26 07:53:02', 'remplcement CM'),
-(12, 28, 1, 'Suppression du périphérique concerné par ce ticket', '2025-02-26 07:53:38', 'Périphérique supprimé: Clavier\nMarque: Acer\nNuméro d\'inventaire: xcfd\nÉtat: Operationnel');
+(15, 42, 1, 'probleme null', '2025-03-02 01:43:10', 'courrige'),
+(16, 53, 1, 'errr', '2025-03-02 10:55:56', 'ress');
 
 -- --------------------------------------------------------
 
@@ -251,7 +240,7 @@ CREATE TABLE IF NOT EXISTS `marque` (
   `nom_marque` varchar(255) NOT NULL,
   PRIMARY KEY (`id_marque`),
   UNIQUE KEY `nom_marque` (`nom_marque`)
-) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 --
 -- Déchargement des données de la table `marque`
@@ -259,6 +248,7 @@ CREATE TABLE IF NOT EXISTS `marque` (
 
 INSERT INTO `marque` (`id_marque`, `nom_marque`) VALUES
 (5, 'Acer'),
+(10, 'alhihlil'),
 (4, 'Brother'),
 (3, 'Canon'),
 (6, 'Dell'),
@@ -294,6 +284,7 @@ CREATE TABLE IF NOT EXISTS `peripherique` (
 --
 
 INSERT INTO `peripherique` (`id_peripherique`, `type`, `id_marque`, `numero_inventaire`, `etat`, `date_ajout`, `supprime_le`, `est_affecte`) VALUES
+(9, 'Clavier', 5, 'xcfd', 'Operationnel', '2025-02-19 16:14:42', NULL, 0),
 (10, 'Clavier', 5, 'ssabij', 'En panne', '2025-02-19 16:20:02', NULL, 0),
 (11, 'Clavier', 6, 'c3dnz', 'Operationnel', '2025-02-20 03:29:26', NULL, 1),
 (12, 'Clavier', 6, 'd3DNO', 'Operationnel', '2025-02-20 03:29:55', NULL, 1),
@@ -302,6 +293,7 @@ INSERT INTO `peripherique` (`id_peripherique`, `type`, `id_marque`, `numero_inve
 (16, 'Souris', 6, 'dnizd', 'Operationnel', '2025-02-20 03:31:51', NULL, 1),
 (17, 'Souris', 3, 'nzkzl', 'Operationnel', '2025-02-20 03:32:07', NULL, 1),
 (18, 'Souris', 6, 'ueyhd', 'Operationnel', '2025-02-20 03:33:55', NULL, 1),
+(19, 'Ecran', 1, 'a4end', 'Operationnel', '2025-02-20 03:34:09', NULL, 0),
 (20, 'Ecran', 1, 'b2js', 'Operationnel', '2025-02-20 03:34:27', NULL, 1),
 (21, 'Ecran', 1, 'c23nsl', 'Operationnel', '2025-02-20 03:34:43', NULL, 1),
 (23, 'Ecran', 6, 'dnls', 'Operationnel', '2025-02-20 03:35:23', NULL, 1),
@@ -486,7 +478,6 @@ CREATE TABLE IF NOT EXISTS `poste_unite` (
 INSERT INTO `poste_unite` (`id_poste`, `id_unite`) VALUES
 (6, 15),
 (7, 17),
-(8, 13),
 (9, 14),
 (10, 16),
 (11, 18);
@@ -580,7 +571,7 @@ CREATE TABLE IF NOT EXISTS `salles` (
   `groupe` enum('Administratif','Etude','Cisco') CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   PRIMARY KEY (`id_salle`),
   UNIQUE KEY `unique_salle_etage` (`nom_salle`,`etage`)
-) ENGINE=InnoDB AUTO_INCREMENT=16 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=17 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
 -- Déchargement des données de la table `salles`
@@ -601,7 +592,8 @@ INSERT INTO `salles` (`id_salle`, `nom_salle`, `etage`, `groupe`) VALUES
 (12, 'Salle d\'Etude 6', '2', 'Etude'),
 (13, 'Salle d\'Etude 7', '2', 'Etude'),
 (14, 'Service Accueil', '2', 'Administratif'),
-(15, 'Comptabilité', '2', 'Administratif');
+(15, 'Comptabilité', '2', 'Administratif'),
+(16, 'test', '2', 'Administratif');
 
 -- --------------------------------------------------------
 
@@ -631,20 +623,25 @@ CREATE TABLE IF NOT EXISTS `tickets` (
   KEY `id_appareil` (`id_appareil`),
   KEY `id_peripherique` (`id_peripherique`),
   KEY `id_unite` (`id_unite`)
-) ENGINE=InnoDB AUTO_INCREMENT=35 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=54 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
 -- Déchargement des données de la table `tickets`
 --
 
 INSERT INTO `tickets` (`id_ticket`, `id_user`, `id_salle`, `id_poste`, `id_appareil`, `id_peripherique`, `id_unite`, `description`, `priorite`, `etat`, `categorie`, `date_creation`, `date_fermeture`) VALUES
-(28, 1, 10, 11, NULL, NULL, 18, 'eeee', '', 'En cours', 'Logiciel', '2025-02-26 07:50:07', NULL),
-(29, 1, 10, 7, NULL, 11, 17, 'tr', '', 'Ouvert', 'Logiciel', '2025-02-26 17:57:01', NULL),
-(30, 1, 10, 11, NULL, 18, 18, 'gg', '', 'Ouvert', 'Logiciel', '2025-02-26 17:57:35', NULL),
-(31, 1, 10, 11, NULL, 18, 18, 'R', '', 'Ouvert', 'Réseau', '2025-02-26 18:14:02', NULL),
-(32, 1, 10, 7, NULL, 11, 17, 'f', 'Moyenne', 'Ouvert', '', '2025-02-26 18:22:41', NULL),
-(33, 1, 10, NULL, 95, NULL, NULL, 'ksjansiuaznsaznsanzsuansauinsaunsaunsansksjansiuaznsaznsanzsuansauinsaunsaunsansksjansiuaznsaznsanzsuansauinsaunsaunsansksjansiuaznsaznsanzsuansauinsaunsaunsansksjansiuaznsaznsanzsuansauinsaunsaunsans', 'Moyenne', 'En cours', '', '2025-02-26 18:44:09', '2025-02-26 19:08:41'),
-(34, 1, 10, 6, NULL, 29, 15, 'nuzduzdeu', 'Haute', 'En cours', '', '2025-02-26 18:44:57', NULL);
+(42, 1, 10, NULL, 95, NULL, NULL, 'off', 'Haute', 'En cours', 'Matériel', '2025-03-02 01:33:58', NULL),
+(43, 1, 10, 6, NULL, 25, 15, 'a', 'Moyenne', 'Ouvert', 'Matériel', '2025-03-02 02:13:20', NULL),
+(44, 1, 10, 7, NULL, 11, 17, 'zzz', 'Faible', 'Ouvert', 'Matériel', '2025-03-02 02:13:38', NULL),
+(45, 1, 10, 10, NULL, 24, 16, 'dd', 'Haute', 'probleme non resoulu(fermé)', 'Logiciel', '2025-03-02 02:14:00', '2025-03-02 02:18:04'),
+(46, 1, 10, 11, NULL, NULL, NULL, 'dazd', '', 'Ouvert', 'Logiciel', '2025-03-02 02:14:58', NULL),
+(47, 1, 10, NULL, 95, NULL, NULL, 'odd', 'Haute', 'Probleme Résoulu(fermé)', 'Matériel', '2025-03-02 02:15:10', '2025-03-02 02:17:54'),
+(48, 1, 10, NULL, 100, NULL, NULL, 'iz', 'Moyenne', 'En cours', 'Demande', '2025-03-02 02:15:24', NULL),
+(49, 1, 10, NULL, 101, NULL, NULL, 'dzz', 'Moyenne', 'En cours', 'Réseau', '2025-03-02 02:15:35', NULL),
+(50, 3, 10, 7, NULL, NULL, NULL, 'offline', 'Moyenne', 'En cours', 'Réseau', '2025-03-02 02:19:37', NULL),
+(51, 2, 10, NULL, 95, NULL, NULL, 'pp', 'Haute', 'Ouvert', 'Matériel', '2025-03-02 02:23:20', NULL),
+(52, 3, 10, 6, NULL, 29, 15, 'dkk', 'Moyenne', 'Ouvert', 'Demande', '2025-03-02 02:23:46', NULL),
+(53, 1, 10, NULL, 95, NULL, NULL, 'tttt', '', 'En cours', 'Matériel', '2025-03-02 10:54:59', NULL);
 
 --
 -- Déclencheurs `tickets`
@@ -690,7 +687,9 @@ CREATE TABLE IF NOT EXISTS `unite` (
 --
 
 INSERT INTO `unite` (`id_unite`, `numero_inventaire`, `ram`, `processeur`, `disque_dur_1_type`, `disque_dur_1_capacite`, `disque_dur_2_type`, `disque_dur_2_capacite`, `etat`, `date_achat`, `date_ajout`, `supprime_le`, `est_affecte`) VALUES
-(13, 'b3bb', '2 GB', 'INTEL_CORE_I3', 'SSD', '70 GB', NULL, NULL, 'Operationnel', NULL, '2025-02-19 16:13:43', NULL, 1),
+(10, 'GZZVHZH', '16 GB', 'INTEL_CORE_I3', 'SSD', '120 GB', NULL, NULL, 'Operationnel', '2025-02-19', '2025-02-19 16:05:40', NULL, 0),
+(11, 'a1aa', '4 GB', 'INTEL_CORE_I3', 'HDD', '120 GB', NULL, NULL, 'En panne', NULL, '2025-02-19 16:08:44', NULL, 0),
+(12, 'b2bb', '2 GB', 'INTEL_CORE_I5', 'SSD', '70 GB', NULL, NULL, 'Operationnel', NULL, '2025-02-19 16:11:58', NULL, 0),
 (14, 'd2dd', '2 GB', 'INTEL_CORE_I3', 'SSD', '500 GB', NULL, NULL, 'Operationnel', NULL, '2025-02-19 16:14:01', NULL, 1),
 (15, 't5dd', '4 GB', 'INTEL_CORE_I3', 'SSD', '120 GB', NULL, NULL, 'En panne', NULL, '2025-02-19 16:14:23', NULL, 1),
 (16, 'jsnals', '4 GB', 'INTEL_CORE_I5', 'SSD', '70 GB', NULL, NULL, 'Operationnel', NULL, '2025-02-20 06:49:46', NULL, 1),
@@ -755,7 +754,7 @@ CREATE TABLE IF NOT EXISTS `users` (
   PRIMARY KEY (`id_user`),
   UNIQUE KEY `email` (`email`),
   KEY `fk_users_role` (`id_role`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
 -- Déchargement des données de la table `users`
@@ -763,7 +762,8 @@ CREATE TABLE IF NOT EXISTS `users` (
 
 INSERT INTO `users` (`id_user`, `prenom`, `nom`, `email`, `password`, `id_role`, `date_created`) VALUES
 (1, 'samy', 'houchat', 'samy@gmail.com', '123456789', 1, '2025-02-20 04:45:32'),
-(2, 'shaq', 'chachanq', 'shaq@gmail.com', '123456789', 2, '2025-02-20 08:10:40');
+(2, 'shaq', 'chachanq', 'shaq@gmail.com', '123456789', 2, '2025-02-20 08:10:40'),
+(3, 'moulawi', 'm', 'moulawi@gmail.com', '12345', 5, '2025-02-27 19:09:40');
 
 --
 -- Contraintes pour les tables déchargées
