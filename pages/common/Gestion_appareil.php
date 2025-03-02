@@ -6,6 +6,24 @@
 */
 require_once '../../includes/functions.php';
 require_once '../../includes/filters.php';  // Ajout de cette ligne
+
+// Configuration de la session avant d'afficher l'en-tête
+configureSession();
+
+// Vérifier si l'utilisateur est connecté
+if (!estConnecte()) {
+    // Redirection explicite avec un message d'erreur
+    header('Location: ../../index.php?erreur=Vous devez être connecté');
+    exit();
+}
+
+// Vérifier si l'utilisateur a le rôle approprié (admin ou technicien)
+if ($_SESSION['user_role'] != 1 && $_SESSION['user_role'] != 2) {
+    // Redirection vers la page de création de ticket pour les utilisateurs standard
+    header('Location: ../user/create_ticket.php?erreur=Accès non autorisé');
+    exit();
+}
+
 // Inclusion du fichier de fonctions :
 // - Chemin relatif depuis le dossier courant
 // - Charge connectDB(), afficherHeader(), afficherMessage(), etc.
@@ -22,17 +40,200 @@ afficherHeader('Gestion du parc informatique', 2);
 // - Le titre est échappé via htmlspecialchars() dans la fonction
 ?>
 
-<div class="d-flex justify-content-between align-items-center mb-4">
-    <h1>Liste des appareils</h1>
-    <div>
-        <a href="../archives/archives_appareil.php" class="btn btn-secondary me-2">
-            <i class="fas fa-archive mr-2"></i>Archives
-        </a>
-        <a href="../../includes/gestion.php?action=ajouter" class="btn btn-primary">
-            <i class="fas fa-plus mr-2"></i>Ajouter un appareil
-        </a>
+<div class="mb-4">
+    <h1 class="mb-3 text-gradient">Liste des appareils</h1>
+    
+    <div class="card mb-4 shadow-sm">
+        <div class="card-body p-3">
+            <div class="d-flex flex-wrap gap-3 justify-content-start">
+                <a href="../../includes/gestion.php?action=ajouter" class="btn btn-gradient-primary px-3 py-2">
+                    <i class="fas fa-plus me-2"></i>Ajouter un appareil
+                </a>
+                
+                <a href="../archives/archives_appareil.php" class="btn btn-gradient-secondary px-3 py-2">
+                    <i class="fas fa-archive me-2"></i>Archives
+                </a>
+                
+                <a href="../../includes/export.php?type=pdf_paysage&source=appareils" class="btn btn-gradient-info px-3 py-2">
+                    <i class="fas fa-file-pdf me-2"></i>PDF
+                </a>
+                
+                <a href="../../includes/export.php?type=csv&source=appareils" class="btn btn-gradient-info px-3 py-2">
+                    <i class="fas fa-file-csv me-2"></i>CSV
+                </a>
+                
+                <button id="copyNames" class="btn btn-gradient-info px-3 py-2">
+                    <i class="fas fa-copy me-2"></i>Copier
+                </button>
+            </div>
+        </div>
     </div>
 </div>
+
+<!-- Ajout des styles pour les dégradés de boutons -->
+<style>
+    .btn-gradient-primary {
+        background: linear-gradient(135deg, #4e73df 0%, #224abe 100%);
+        color: white;
+        border: none;
+        transition: all 0.3s ease;
+    }
+    
+    .btn-gradient-primary:hover {
+        background: linear-gradient(135deg, #3a5fc8 0%, #1a3a9c 100%);
+        color: white;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+    
+    .btn-gradient-secondary {
+        background: linear-gradient(135deg, #6c757d 0%, #495057 100%);
+        color: white;
+        border: none;
+        transition: all 0.3s ease;
+    }
+    
+    .btn-gradient-secondary:hover {
+        background: linear-gradient(135deg, #5a6268 0%, #3d4347 100%);
+        color: white;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+    
+    .btn-gradient-info {
+        background: linear-gradient(135deg, #36b9cc 0%, #258391 100%);
+        color: white;
+        border: none;
+        transition: all 0.3s ease;
+    }
+    
+    .btn-gradient-info:hover {
+        background: linear-gradient(135deg, #2c9faf 0%, #1e6f7a 100%);
+        color: white;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+    
+    .btn-gradient-edit {
+        background: linear-gradient(135deg, #17a2b8 0%, #0f6674 100%);
+        color: white;
+        border: none;
+        transition: all 0.3s ease;
+    }
+    
+    .btn-gradient-edit:hover {
+        background: linear-gradient(135deg, #138496 0%, #0c525d 100%);
+        color: white;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+    
+    .btn-gradient-danger {
+        background: linear-gradient(135deg, #e74a3b 0%, #be2617 100%);
+        color: white;
+        border: none;
+        transition: all 0.3s ease;
+    }
+    
+    .btn-gradient-danger:hover {
+        background: linear-gradient(135deg, #d52a1a 0%, #9e1f13 100%);
+        color: white;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+    
+    .gap-3 {
+        gap: 1rem !important;
+    }
+    
+    .gap-2 {
+        gap: 0.5rem !important;
+    }
+    
+    /* Amélioration des badges d'état */
+    .badge-success {
+        background: linear-gradient(135deg, #1cc88a 0%, #13855c 100%);
+        color: white;
+        padding: 0.4rem 0.6rem;
+        border-radius: 0.25rem;
+        font-weight: 500;
+    }
+    
+    .badge-danger {
+        background: linear-gradient(135deg, #e74a3b 0%, #be2617 100%);
+        color: white;
+        padding: 0.4rem 0.6rem;
+        border-radius: 0.25rem;
+        font-weight: 500;
+    }
+    
+    /* Nouveaux styles */
+    .text-gradient {
+        background: linear-gradient(135deg, #4e73df 0%, #224abe 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        color: transparent;
+        display: inline-block;
+    }
+    
+    .shadow-sm {
+        box-shadow: 0 .125rem .25rem rgba(0,0,0,.075) !important;
+    }
+    
+    .table {
+        border-radius: 0.5rem;
+        overflow: hidden;
+    }
+    
+    .thead-dark {
+        background: linear-gradient(135deg, #4e73df 0%, #224abe 100%);
+    }
+    
+    .thead-dark th {
+        color: white !important;
+        border: none !important;
+    }
+    
+    .table-hover tbody tr:hover {
+        background-color: rgba(78, 115, 223, 0.05);
+    }
+    
+    /* Animation pour les boutons */
+    .btn {
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .btn:after {
+        content: '';
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 5px;
+        height: 5px;
+        background: rgba(255, 255, 255, 0.5);
+        opacity: 0;
+        border-radius: 100%;
+        transform: scale(1, 1) translate(-50%);
+        transform-origin: 50% 50%;
+    }
+    
+    .btn:hover:after {
+        animation: ripple 1s ease-out;
+    }
+    
+    @keyframes ripple {
+        0% {
+            transform: scale(0, 0);
+            opacity: 0.5;
+        }
+        100% {
+            transform: scale(20, 20);
+            opacity: 0;
+        }
+    }
+</style>
 
 <?php
 /*------------------------------
@@ -78,6 +279,9 @@ try { // Début du bloc try pour gestion d'erreurs
         'id_salle' => $_GET['id_salle'] ?? '',
         'id_marque' => $_GET['id_marque'] ?? ''
     ];
+    
+    // Enregistrement des filtres dans la session pour l'exportation
+    $_SESSION['filters']['appareil'] = $filters;
 
     $search = $_GET['search'] ?? '';
 
@@ -147,6 +351,12 @@ try { // Début du bloc try pour gestion d'erreurs
     if (isset($_GET['succes'])) {
         echo '<div class="alert alert-success">Opération réalisée avec succès</div>';
     }
+    
+    // Affichage du message d'information pour l'exportation
+    if (isset($_SESSION['info'])) {
+        echo '<div class="alert alert-info">' . htmlspecialchars($_SESSION['info']) . '</div>';
+        unset($_SESSION['info']); // On supprime le message après l'avoir affiché
+    }
 
 /*------------------------------
 /* GESTION DE L'AFFICHAGE
@@ -176,20 +386,20 @@ try { // Début du bloc try pour gestion d'erreurs
                             <td><?= htmlspecialchars(empty($appareil['nom_salle']) ? 'Non assigné' : $appareil['nom_salle']) ?></td>
                             <td>
                                 <?php if ($appareil['etat'] === 'Operationnel') : ?>
-                                    <span class="badge badge-success">Opérationnel</span>
+                                    <span class="badge-success">Opérationnel</span>
                                 <?php else : ?>
-                                    <span class="badge badge-danger">En panne</span>
+                                    <span class="badge-danger">En panne</span>
                                 <?php endif; ?>
                             </td>
                             <td>
-                                <div class="btn-group" role="group">
+                                <div class="d-flex gap-2">
                                     <a href="../../includes/gestion.php?action=modifier&id=<?= $appareil['id_appareil'] ?>" 
-                                       class="btn btn-info btn-sm" title="Modifier">
+                                       class="btn btn-gradient-edit btn-sm" title="Modifier">
                                         <i class="fas fa-edit"></i>
                                     </a>
                                     <a href="../../includes/gestion.php?action=supprimer&id=<?= $appareil['id_appareil'] ?>" 
                                        onclick="return confirm('Êtes-vous sûr de vouloir supprimer cet appareil ?')" 
-                                       class="btn btn-danger btn-sm" title="Supprimer">
+                                       class="btn btn-gradient-danger btn-sm" title="Supprimer">
                                         <i class="fas fa-trash"></i>
                                     </a>
                                 </div>
@@ -199,6 +409,36 @@ try { // Début du bloc try pour gestion d'erreurs
                 </tbody>
             </table>
         </div>
+
+        <!-- Script pour la fonctionnalité de copie des noms -->
+        <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            document.getElementById('copyNames').addEventListener('click', function(e) {
+                e.preventDefault();
+                
+                // Récupérer tous les modèles d'appareils
+                const rows = document.querySelectorAll('table tbody tr');
+                let names = [];
+                
+                rows.forEach(row => {
+                    const type = row.cells[0].textContent.trim();
+                    const model = row.cells[1].textContent.trim();
+                    names.push(type + ' - ' + model);
+                });
+                
+                // Copier dans le presse-papiers
+                const textToCopy = names.join('\n');
+                navigator.clipboard.writeText(textToCopy)
+                    .then(() => {
+                        alert('Les noms des appareils ont été copiés dans le presse-papiers');
+                    })
+                    .catch(err => {
+                        console.error('Erreur lors de la copie :', err);
+                        alert('Erreur lors de la copie dans le presse-papiers');
+                    });
+            });
+        });
+        </script>
     <?php else : ?>
         <div class="alert alert-info">Aucun appareil trouvé.</div>
     <?php endif;

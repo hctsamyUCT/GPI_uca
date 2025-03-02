@@ -207,7 +207,7 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .bg-primary {
-  background-color: var(--primary);
+  background-color: #2f3f63 !important;
 }
 
 /* Ajoutez ces styles pour la modal */
@@ -258,4 +258,83 @@ h1, h2, h3, h4, h5, h6 {
     top: 10px;
     text-decoration: none;
     color: #000;
+}
+
+/* Styles de base pour la navbar */
+.navbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.5rem 1rem;
+  position: fixed;
+  top: -75px;
+  right: 0;
+  z-index: 999;
+}
+
+.navbar-brand {
+  display: inline-block;
+  padding-top: 0.3125rem;
+  padding-bottom: 0.3125rem;
+  margin-right: 1rem;
+  font-size: 1.25rem;
+  line-height: inherit;
+  white-space: nowrap;
+}
+
+.navbar-nav {
+  display: flex;
+  flex-direction: row;
+  padding-left: 0;
+  margin-bottom: 0;
+  list-style: none;
+}
+
+.navbar-dark {
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.navbar-dark .navbar-brand {
+  color: #fff;
+}
+
+.navbar-dark .navbar-nav .nav-link {
+  color: rgba(255, 255, 255, 0.7);
+}
+
+/* Styles pour le bouton de déconnexion dans la navbar */
+.btn-outline-light {
+  color: #f8f9fa;
+  border-color: #f8f9fa;
+  background-color: transparent;
+  transition: all 0.3s ease;
+}
+
+.btn-outline-light:hover {
+  color: #212529;
+  background-color: #f8f9fa;
+  border-color: #f8f9fa;
+}
+
+.btn-sm {
+  padding: 0.25rem 0.5rem;
+  font-size: 0.875rem;
+  line-height: 1.5;
+  border-radius: 0.2rem;
+}
+
+/* Styles pour les informations utilisateur dans la navbar */
+.navbar-user-info {
+  display: flex;
+  align-items: center;
+}
+
+.user-name {
+  font-weight: bold;
+}
+
+.user-role {
+  font-size: 0.8rem;
+  margin-left: 5px;
 }

@@ -6,7 +6,7 @@ configureSession();
 
 // Vérifier si l'utilisateur est connecté
 if (!estConnecte()) {
-    header('Location: ../pages/login.php?error=Vous devez être connecté');
+    header('Location: ../index.php?erreur=Vous devez être connecté');
     exit();
 }
 
@@ -104,11 +104,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && !isset($_POST['filtre'])) {
         
         // Redirection basée sur le rôle de l'utilisateur
         // Admin (1) ou Technicien (2) sont redirigés vers manage_tickets.php
-        // Les autres utilisateurs sont redirigés vers views_all.php
+        // Les autres utilisateurs sont redirigés vers create_ticket.php
         if (isset($_SESSION['user_role']) && ($_SESSION['user_role'] == 1 || $_SESSION['user_role'] == 2)) {
             header('Location: ../pages/admin/manage_tickets.php?succes=Ticket créé avec succès');
         } else {
-            header('Location: ../pages/common/views_all.php?succes=Ticket créé avec succès');
+            header('Location: ../pages/user/create_ticket.php?succes=Ticket créé avec succès');
         }
         exit();
 

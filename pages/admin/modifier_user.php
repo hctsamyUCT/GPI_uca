@@ -1,10 +1,19 @@
 <?php
-session_start();
 require_once '../../includes/functions.php';
 
-// Vérification des droits d'accès
-if (!isset($_SESSION['id_user']) || $_SESSION['id_role'] != 1) {
-    header('Location: ../login.php');
+// Configuration de la session avant d'afficher l'en-tête
+configureSession();
+
+// Vérifier si l'utilisateur est connecté
+if (!estConnecte()) {
+    // Redirection explicite avec un message d'erreur
+    header('Location: ../../index.php?erreur=Vous devez être connecté');
+    exit();
+}
+
+// Vérification des droits d'accès (admin uniquement)
+if ($_SESSION['user_role'] != 1) {
+    header('Location: ../user/create_ticket.php?erreur=Accès non autorisé');
     exit();
 }
 

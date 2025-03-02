@@ -2,6 +2,23 @@
 require_once '../../includes/functions.php';
 require_once '../../includes/views.php';
 
+// Configuration de la session avant d'afficher l'en-tête
+configureSession();
+
+// Vérifier si l'utilisateur est connecté
+if (!estConnecte()) {
+    // Redirection explicite avec un message d'erreur
+    header('Location: ../../index.php?erreur=Vous devez être connecté');
+    exit();
+}
+
+// Vérifier si l'utilisateur a le rôle approprié (admin ou technicien)
+if ($_SESSION['user_role'] != 1 && $_SESSION['user_role'] != 2) {
+    // Redirection vers la page de création de ticket pour les utilisateurs standard
+    header('Location: ../user/create_ticket.php?erreur=Accès non autorisé');
+    exit();
+}
+
 afficherHeader('Vue Globale du Matériel', 2);
 
 try {

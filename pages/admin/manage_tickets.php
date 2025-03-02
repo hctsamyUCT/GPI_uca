@@ -1,17 +1,20 @@
 <?php
-session_start();
 require_once '../../includes/functions.php';
+
+// Configuration de la session
+configureSession();
+
+// Vérifier si l'utilisateur est connecté et a les droits d'accès (admin ou technicien)
+if (!estConnecte()) {
+    header('Location: ../../index.php?error=Vous devez être connecté pour accéder à cette page');
+    exit();
+}
+
+// Utiliser la nouvelle fonction pour vérifier les rôles
+verifierRole([1, 2], '../../index.php', 'Vous n\'avez pas les droits nécessaires pour accéder à cette page');
 
 // Initialiser la connexion à la base de données
 $pdo = connectDB();
-
-
-
-// Vérifier si l'utilisateur est connecté
-if (!isset($_SESSION['user_id'])) {
-    header('Location: ../../index.php?error=unauthorized');
-    exit();
-}
 
 // Récupérer l'ID de l'utilisateur connecté
 $current_user_id = $_SESSION['user_id'];
@@ -245,7 +248,109 @@ foreach ($tickets as &$ticket) {
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body>
-    <div class="container mt-4">
+    <!-- Sidebar GLPI (navbar verticale) -->
+    <div class="sidebar-glpi">
+        <div class="sidebar-header">
+            <a href="../../index.php" class="logo-container">
+                <span class="logo-text">GPI</span>
+            </a>
+        </div>
+        
+        <div class="sidebar-search">
+            <div class="search-wrapper">
+                <i class="fas fa-search search-icon"></i>
+                <input type="text" placeholder="Chercher dans le menu" class="search-input">
+            </div>
+        </div>
+        
+        <nav class="sidebar-nav">
+            <ul class="sidebar-menu">
+                <!-- Menu Parc (visible uniquement pour les admins et techniciens) -->
+                <?php if ($_SESSION['user_role'] == 1 || $_SESSION['user_role'] == 2): ?>
+                <li class="sidebar-item">
+                    <a href="#" class="sidebar-link">
+                        <i class="fas fa-box sidebar-icon"></i>
+                        <span>Parc</span>
+                        <i class="fas fa-chevron-right sidebar-arrow"></i>
+                    </a>
+                    <ul class="sidebar-submenu">
+                        <li><a href="../../pages/common/gestion_appareil.php"><i class="fas fa-print"></i>Projecteurs & Imprimantes</a></li>
+                        <li><a href="../../pages/common/Gestion_unit.php"><i class="fas fa-server"></i>Unités centrales</a></li>
+                        <li><a href="../../pages/common/gestion_peripherique.php"><i class="fas fa-keyboard"></i>Périphériques</a></li>
+                        <li><a href="../../pages/common/gestion_poste.php"><i class="fas fa-desktop"></i>Postes</a></li>
+                    </ul>
+                </li>
+                <?php endif; ?>
+                
+                <!-- Menu Assistance (tous les utilisateurs peuvent voir cette section) -->
+                <li class="sidebar-item">
+                    <a href="#" class="sidebar-link">
+                        <i class="fas fa-headset sidebar-icon"></i>
+                        <span>Assistance</span>
+                        <i class="fas fa-chevron-right sidebar-arrow"></i>
+                    </a>
+                    <ul class="sidebar-submenu">
+                        <li><a href="../../pages/user/create_ticket.php"><i class="fas fa-ticket-alt"></i>Créer un ticket</a></li>
+                        
+                        <!-- Option Gestion des tickets (visible uniquement pour les admins et techniciens) -->
+                        <?php if ($_SESSION['user_role'] == 1 || $_SESSION['user_role'] == 2): ?>
+                        <li><a href="../../pages/admin/manage_tickets.php"><i class="fas fa-tasks"></i>Gestion des tickets</a></li>
+                        <?php endif; ?>
+                    </ul>
+                </li>
+                
+                <!-- Menu Configuration (visible uniquement pour les admins) -->
+                <?php if ($_SESSION['user_role'] == 1): ?>
+                <li class="sidebar-item">
+                    <a href="#" class="sidebar-link">
+                        <i class="fas fa-cog sidebar-icon"></i>
+                        <span>Configuration</span>
+                        <i class="fas fa-chevron-right sidebar-arrow"></i>
+                    </a>
+                    <ul class="sidebar-submenu">
+                        <li><a href="../../pages/admin/gestion_references.php"><i class="fas fa-tags"></i>Gestion des salles/marques</a></li>
+                        <li><a href="../../pages/common/views_all.php"><i class="fas fa-th-list"></i>Vue globale sur le stock</a></li>
+                        <li><a href="../../pages/admin/gestion_users.php"><i class="fas fa-user-tag"></i>Gestion des utilisateurs</a></li>
+                    </ul>
+                </li>
+                <?php endif; ?>
+            </ul>
+        </nav>
+        
+        <!-- Bouton pour réduire le menu -->
+        <div class="sidebar-footer">
+            <button class="btn-collapse" id="collapseMenu">
+                <i class="fas fa-chevron-left"></i>
+                <span>Réduire le menu</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- Navbar horizontale avec les informations utilisateur -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary mb-4 fixed-top" style="right: 250px; margin-right: -251px;">
+        <div class="container d-flex justify-content-between align-items-center">
+            <!-- Logo ou titre pour la navbar horizontale -->
+            <a class="navbar-brand" href="../../index.php">GPI</a>
+            
+            <!-- Partie droite de la navbar -->
+            <div class="d-flex align-items-center">
+                <?php
+                // Récupérer les informations de l'utilisateur
+                $stmt = $pdo->prepare("SELECT u.nom, u.prenom, r.role_name FROM users u JOIN roles r ON u.id_role = r.id_role WHERE u.id_user = ?");
+                $stmt->execute([$_SESSION['user_id']]);
+                $user = $stmt->fetch();
+                ?>
+                <div class="navbar-user-info mr-3">
+                    <span class="user-name text-white mr-2"><?= htmlspecialchars($user['prenom'] . ' ' . $user['nom']) ?></span>
+                    <span class="user-role badge badge-light"><?= htmlspecialchars($user['role_name']) ?></span>
+                </div>
+                
+                <a href="../../includes/logout.php" class="btn btn-outline-light"><i class="fas fa-sign-out-alt mr-1"></i>Déconnexion</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mt-5 pt-5">
         <h1 class="mb-4 text-center text-3xl font-semibold text-gray-800">Gestion des Tickets</h1>
 
         <?php if (isset($_SESSION['success'])): ?>
@@ -378,6 +483,19 @@ foreach ($tickets as &$ticket) {
                         </button>
                     </div>
                 </form>
+                
+                <div class="mt-4 flex justify-end">
+                    <div class="dropdown">
+                        <button class="bg-green-600 hover:bg-green-700 text-white font-medium py-2 px-4 rounded-md transition duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-opacity-50 dropdown-toggle" type="button" id="exportDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="fas fa-download mr-2"></i>Exporter
+                        </button>
+                        <ul class="dropdown-menu" aria-labelledby="exportDropdown">
+                            <li><a class="dropdown-item" href="../../includes/export.php?source=tickets&type=csv<?= isset($_GET['etat']) ? '&etat='.$_GET['etat'] : '' ?><?= isset($_GET['priorite']) ? '&priorite='.$_GET['priorite'] : '' ?><?= isset($_GET['categorie']) ? '&categorie='.$_GET['categorie'] : '' ?><?= isset($_GET['salle']) ? '&salle='.$_GET['salle'] : '' ?>"><i class="fas fa-file-csv mr-2"></i>CSV</a></li>
+                            <li><a class="dropdown-item" href="../../includes/export.php?source=tickets&type=pdf_paysage<?= isset($_GET['etat']) ? '&etat='.$_GET['etat'] : '' ?><?= isset($_GET['priorite']) ? '&priorite='.$_GET['priorite'] : '' ?><?= isset($_GET['categorie']) ? '&categorie='.$_GET['categorie'] : '' ?><?= isset($_GET['salle']) ? '&salle='.$_GET['salle'] : '' ?>"><i class="fas fa-file-pdf mr-2"></i>Page courante en PDF paysage</a></li>
+                            <li><a class="dropdown-item" href="../../includes/export.php?source=tickets&type=pdf_portrait<?= isset($_GET['etat']) ? '&etat='.$_GET['etat'] : '' ?><?= isset($_GET['priorite']) ? '&priorite='.$_GET['priorite'] : '' ?><?= isset($_GET['categorie']) ? '&categorie='.$_GET['categorie'] : '' ?><?= isset($_GET['salle']) ? '&salle='.$_GET['salle'] : '' ?>"><i class="fas fa-file-pdf mr-2"></i>Page courante en PDF portrait</a></li>
+                        </ul>
+                    </div>
+                </div>
             </div>
         </div>
 
@@ -670,24 +788,53 @@ foreach ($tickets as &$ticket) {
         </div>
     </div>
 
-    <!-- Scripts JavaScript nécessaires uniquement pour Bootstrap (version minimale) -->
-    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/js/bootstrap.min.js"></script>
+    <!-- Scripts JavaScript -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- Script pour la fonctionnalité du menu vertical -->
     <script>
-        // Ajouter des transitions pour améliorer l'expérience utilisateur
-        document.addEventListener('DOMContentLoaded', function() {
-            // Animation des alertes
-            const alerts = document.querySelectorAll('.alert');
-            alerts.forEach(alert => {
-                setTimeout(() => {
-                    alert.style.opacity = '0';
-                    alert.style.transition = 'opacity 1s ease';
-                    setTimeout(() => {
-                        alert.style.display = 'none';
-                    }, 1000);
-                }, 5000);
-            });
+    $(document).ready(function() {
+        // Toggle submenu
+        $(".sidebar-link").click(function(e) {
+            e.preventDefault();
+            $(this).next(".sidebar-submenu").slideToggle(300);
+            $(this).parent().toggleClass("active");
+            $(this).find(".sidebar-arrow").toggleClass("rotate");
         });
+        
+        // Collapse menu
+        $("#collapseMenu").click(function() {
+            $(".sidebar-glpi").toggleClass("collapsed");
+            $("body").toggleClass("sidebar-collapsed");
+            
+            if ($(".sidebar-glpi").hasClass("collapsed")) {
+                $(this).html('<i class="fas fa-chevron-right"></i>');
+                $(".sidebar-item span, .sidebar-footer span, .logo-text").hide();
+            } else {
+                $(this).html('<i class="fas fa-chevron-left"></i><span>Réduire le menu</span>');
+                $(".sidebar-item span, .sidebar-footer span, .logo-text").show();
+            }
+        });
+        
+        // Animation des alertes
+        const alerts = document.querySelectorAll('.alert');
+        alerts.forEach(alert => {
+            setTimeout(() => {
+                alert.style.opacity = '0';
+                alert.style.transition = 'opacity 1s ease';
+                setTimeout(() => {
+                    alert.style.display = 'none';
+                }, 1000);
+            }, 5000);
+        });
+        
+        // Initialisation des dropdowns Bootstrap 5
+        var dropdownElementList = [].slice.call(document.querySelectorAll('.dropdown-toggle'));
+        var dropdownList = dropdownElementList.map(function(dropdownToggleEl) {
+            return new bootstrap.Dropdown(dropdownToggleEl);
+        });
+    });
     </script>
 </body>
 </html>

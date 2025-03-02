@@ -10,6 +10,9 @@ if (!estConnecte()) {
     exit();
 }
 
+// Utiliser la nouvelle fonction pour vérifier les rôles
+verifierRole([1, 2], '../../index.php', 'Vous n\'avez pas les droits nécessaires pour accéder à cette page');
+
 // Récupérer l'ID du ticket depuis l'URL
 $ticket_id = isset($_GET['id']) ? intval($_GET['id']) : 0;
 

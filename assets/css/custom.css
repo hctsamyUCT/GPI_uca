@@ -1,68 +1,485 @@
-/* Custom styles for better visibility and spacing of buttons */
+/* Styles pour la navbar GLPI */
+body {
+    margin: 0;
+    padding: 0;
+    font-family: Arial, sans-serif;
+    overflow-x: hidden;
+    transition: all 0.3s ease;
+}
 
-/* ========== SIDEBAR NAVIGATION STYLES ========== */
-.sidebar {
-    min-height: calc(100vh - 72px);
-    border-right: 1px solid #dee2e6;
-    padding-top: 20px;
-    background-color: #f8f9fa;
-    box-shadow: 0 0 10px rgba(0,0,0,0.05);
+body .container {
+    width: calc(100% - 30px);
+    max-width: 1140px;
+    margin-top: 70px; /* Ajusté pour éviter le chevauchement avec la navbar fixe */
+    margin-left: auto;
+    margin-right: auto;
+    transition: all 0.3s ease;
 }
-.sidebar .nav-link {
-    color: #495057;
-    padding: 0.5rem 1rem;
-    border-radius: 0;
-    transition: all 0.2s ease;
-    margin-bottom: 2px;
-    border-left: 3px solid transparent;
+
+body.sidebar-collapsed {
+    padding-left: 60px;
 }
-.sidebar .nav-link:hover {
-    background-color: #e9ecef;
-    border-left: 3px solid #007bff;
+
+body:not(.sidebar-collapsed) {
+    padding-left: 250px;
 }
-.sidebar .nav-link.active {
-    background-color: rgba(0, 123, 255, 0.1);
-    border-left: 3px solid #007bff;
-    color: #007bff;
+
+
+
+body.sidebar-collapsed .navbar {
+    left: 60px;
 }
-.sidebar .nav-link i {
-    margin-right: 8px;
+
+/* Styles spécifiques pour les éléments utilisateur dans la navbar */
+.user-name {
+    color: #fff; /* Texte blanc pour le nom d'utilisateur */
+}
+
+.user-role {
+    background-color: rgba(255, 255, 255, 0.2); /* Badge semi-transparent */
+    color: #fff; /* Texte blanc pour le rôle */
+}
+
+/* Modification du bouton de déconnexion pour la navbar noire */
+.btn-outline-light {
+    border-color: #444;
+    color: #fff;
+}
+
+.btn-outline-light:hover {
+    background-color: #444;
+    color: #fff;
+    border-color: #555;
+}
+
+/* Ajustement de la navbar brand pour le thème noir */
+.navbar-brand {
+    color: #fff !important;
+    font-weight: bold;
+}
+
+.navbar-brand:hover {
+    color: #ccc !important;
+}
+
+/* Ajustement pour le mode collapsed de la sidebar */
+body.sidebar-collapsed .container {
+    margin-left: 80px; /* Ajusté pour le mode collapsed */
+}
+
+/* Ajustement pour les appareils mobiles */
+@media (max-width: 768px) {
+    .navbar {
+        left: 0;
+        margin-left: 0;
+    }
+    
+    body .container {
+        margin-left: 0;
+        padding-left: 15px;
+        padding-right: 15px;
+    }
+    
+    .sidebar-glpi.collapsed ~ .navbar {
+        left: 0;
+        margin-left: 0;
+    }
+}
+
+/* Styles pour la navbar horizontale */
+.navbar-user-info {
+    display: flex;
+    align-items: center;
+}
+
+body.d-flex {
+    display: flex;
+    min-height: 100vh;
+}
+
+/* Sidebar GLPI */
+.sidebar-glpi {
+    width: 250px;
+    background-color: #2f3f63;
+    color: white;
+    height: 100vh;
+    position: fixed;
+    left: 0;
+    top: 0;
+    z-index: 1000;
+    transition: all 0.3s ease;
+    display: flex;
+    flex-direction: column;
+}
+
+.sidebar-glpi.collapsed {
+    width: 60px;
+}
+
+.sidebar-header {
+    padding: 15px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.logo-container {
+    display: flex;
+    align-items: center;
+    text-decoration: none;
+    color: white;
+}
+
+.logo-img {
+    width: 40px;
+    height: 40px;
+    margin-right: 10px;
+}
+
+.logo-text {
+    font-size: 24px;
+    font-weight: bold;
+    color: white;
+}
+
+.sidebar-search {
+    padding: 15px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.search-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.search-icon {
+    position: absolute;
+    left: 10px;
+    color: rgba(255, 255, 255, 0.5);
+}
+
+.search-input {
+    width: 100%;
+    padding: 8px 10px 8px 35px;
+    border: none;
+    background-color: rgba(255, 255, 255, 0.1);
+    color: white;
+    border-radius: 4px;
+}
+
+.search-input::placeholder {
+    color: rgba(255, 255, 255, 0.5);
+}
+
+.sidebar-nav {
+    flex: 1;
+    overflow-y: auto;
+    padding-bottom: 20px;
+}
+
+.sidebar-menu {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.sidebar-item {
+    position: relative;
+}
+
+.sidebar-link {
+    display: flex;
+    align-items: center;
+    padding: 12px 15px;
+    color: white;
+    text-decoration: none;
+    transition: all 0.3s ease;
+}
+
+.sidebar-link:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+    color: white;
+    text-decoration: none;
+}
+
+.sidebar-icon {
+    width: 20px;
+    margin-right: 10px;
+    text-align: center;
+}
+
+.sidebar-arrow {
+    margin-left: auto;
+    transition: transform 0.3s ease;
+}
+
+.sidebar-arrow.rotate {
+    transform: rotate(90deg);
+}
+
+.sidebar-submenu {
+    display: none;
+    list-style: none;
+    padding-left: 0;
+    background-color: rgba(0, 0, 0, 0.1);
+}
+
+.sidebar-submenu li a {
+    padding: 10px 15px 10px 45px;
+    display: block;
+    color: rgba(255, 255, 255, 0.8);
+    text-decoration: none;
+    transition: all 0.3s ease;
+}
+
+.sidebar-submenu li a:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+    color: white;
+}
+
+.sidebar-submenu li a i {
+    margin-right: 10px;
     width: 20px;
     text-align: center;
-    color: #6c757d;
-    transition: color 0.2s ease;
-}
-.sidebar .nav-link:hover i {
-    color: #007bff;
-}
-.sidebar .category-title {
-    font-weight: bold;
-    text-transform: uppercase;
-    font-size: 0.8rem;
-    color: #6c757d;
-    padding: 1rem 1rem 0.5rem;
-    margin-top: 0.5rem;
-    letter-spacing: 1px;
-}
-.main-content {
-    padding: 20px;
-    background-color: #fff;
-    border-radius: 8px;
-    box-shadow: 0 0 15px rgba(0,0,0,0.05);
-    margin-top: 20px;
-    margin-bottom: 20px;
-}
-.menu a {
-    margin: 10px; /* Add margin for better spacing */
-    padding: 10px 20px; /* Increase padding for better visibility */
-    background-color: #007bff; /* Bootstrap primary color for consistency */
-    color: white; /* White text for better contrast */
-    border-radius: 5px; /* Rounded corners for a modern look */
-    text-decoration: none; /* Remove underline from links */
 }
 
-.menu a:hover {
-    background-color: #0056b3; /* Darker shade on hover for better feedback */
+.sidebar-footer {
+    padding: 15px;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.btn-collapse {
+    display: flex;
+    align-items: center;
+    background: none;
+    border: none;
+    color: white;
+    cursor: pointer;
+    padding: 8px;
+    width: 100%;
+    text-align: left;
+}
+
+.btn-collapse i {
+    margin-right: 10px;
+}
+
+/* Main Content */
+.main-content-glpi {
+    flex: 1;
+    transition: all 0.3s ease;
+    width: 100%;
+}
+
+.main-header {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+}
+
+/* Styles pour le contenu principal */
+.main-content {
+    background-color: #f8f9fa;
+    border-radius: 8px;
+    padding: 15px;
+    margin-bottom: 20px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.05);
+}
+
+/* Styles pour les cartes statistiques */
+.stat-item {
+    background-color: #fff;
+    border-radius: 8px;
+    padding: 10px;
+    margin-bottom: 15px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+    transition: all 0.3s ease;
+    height: 100%;
+}
+
+.stat-unites {
+    border-left: 4px solid #007bff;
+    background: linear-gradient(to bottom right, #ffffff, #f8fbff);
+}
+
+.stat-peripheriques {
+    border-left: 4px solid #28a745;
+    background: linear-gradient(to bottom right, #ffffff, #f8fff9);
+}
+
+.stat-appareils {
+    border-left: 4px solid #dc3545;
+    background: linear-gradient(to bottom right, #ffffff, #fff8f8);
+}
+
+.stat-postes {
+    border-left: 4px solid #17a2b8;
+    background: linear-gradient(to bottom right, #ffffff, #f8fdff);
+}
+
+.stat-number {
+    font-size: 1.8rem;
+    font-weight: 700;
+    margin-bottom: 5px;
+    color: #2c3e50;
+}
+
+.stat-unites .stat-number {
+    background: -webkit-linear-gradient(45deg, #007bff, #00c6ff);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.stat-peripheriques .stat-number {
+    background: -webkit-linear-gradient(45deg, #28a745, #7fd81e);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.stat-appareils .stat-number {
+    background: -webkit-linear-gradient(45deg, #dc3545, #ff9a9e);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.stat-postes .stat-number {
+    background: -webkit-linear-gradient(45deg, #17a2b8, #4facfe);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.stat-label {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #6c757d;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.sub-stats {
+    display: flex;
+    flex-wrap: wrap;
+    margin-top: 5px;
+    background-color: rgba(0,0,0,0.02);
+    border-radius: 6px;
+    padding: 3px;
+}
+
+.sub-stat {
+    flex: 1;
+    min-width: 70px;
+    padding: 5px;
+    font-size: 0.85rem;
+    text-align: center;
+    border-right: 1px solid rgba(0,0,0,0.05);
+}
+
+.sub-stat:last-child {
+    border-right: none;
+}
+
+.sub-stat-number {
+    font-weight: 700;
+    font-size: 0.9rem;
+    display: block;
+    margin-bottom: 2px;
+}
+
+/* Styles pour les cartes */
+.card {
+    border: none;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+    border-radius: 8px;
+    overflow: hidden;
+    transition: all 0.3s ease;
+    margin-bottom: 15px;
+}
+
+.card-header {
+    padding: 10px 15px;
+    font-weight: 600;
+    font-size: 1rem;
+    background: linear-gradient(to right, #4e73df, #224abe);
+    color: white;
+    letter-spacing: 0.5px;
+}
+
+.card-body {
+    padding: 15px;
+}
+
+/* Styles pour les tickets */
+.ticket-total {
+    font-size: 2.5rem;
+    font-weight: 700;
+    text-align: center;
+    margin-bottom: 15px;
+    background: -webkit-linear-gradient(45deg, #4e73df, #224abe);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.ticket-status-item {
+    padding: 8px 10px;
+    border-radius: 6px;
+    margin-bottom: 8px;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+}
+
+.ticket-status-item:nth-child(1) {
+    background-color: rgba(220,53,69,0.1);
+    border-left: 4px solid #dc3545;
+}
+
+.ticket-status-item:nth-child(2) {
+    background-color: rgba(255,193,7,0.1);
+    border-left: 4px solid #ffc107;
+}
+
+.ticket-status-item:nth-child(3) {
+    background-color: rgba(40,167,69,0.1);
+    border-left: 4px solid #28a745;
+}
+
+.status-dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    margin-right: 10px;
+    box-shadow: 0 0 0 2px rgba(0,0,0,0.1);
+}
+
+/* Styles pour les graphiques */
+.chart-container {
+    padding: 5px;
+    height: 250px;
+}
+
+.evolution-chart {
+    height: 300px;
+    background-color: #ffffff;
+    border-radius: 8px;
+    padding: 10px;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    body .container {
+        margin-top: 50px;
+    }
+    
+    .navbar {
+        left: 0;
+    }
+    
+    body:not(.sidebar-collapsed) {
+        padding-left: 0;
+    }
+    
+    .stat-item {
+        margin-bottom: 15px;
+    }
 }
 
 /* ========== TICKETS STYLES ========== */
@@ -789,4 +1206,191 @@ td:first-child {
 .ticket-description {
     margin-top: 5px;
     font-style: italic;
+}
+
+/* Ajustement de la navbar brand pour le thème noir */
+.navbar-brand {
+    color: #fff !important;
+    font-weight: bold;
+}
+
+.navbar-brand:hover {
+    color: #ccc !important;
+}
+
+.col-md-6 {
+  top: 135px;
+}
+
+/* Styles spécifiques pour la page de gestion des utilisateurs */
+.mt-4 {
+  margin-top: 75px;
+}
+
+div.mb-4 > h2:nth-child(1) {
+  margin-top: 87px;
+}
+
+/* Styles pour la page de connexion */
+.login-page {
+    background: linear-gradient(to bottom, #ffffff, #000000);
+    min-height: 100vh;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+}
+
+.login-page::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: radial-gradient(circle at center, rgba(255,255,255,0.1) 0%, rgba(0,0,0,0.3) 100%);
+    pointer-events: none;
+}
+
+.login-container {
+    padding: 0;
+    width: 100%;
+    max-width: 500px;
+    position: relative;
+    z-index: 10;
+}
+
+.login-card {
+    border: none;
+    border-radius: 1rem;
+    box-shadow: 0 0.5rem 2rem rgba(0, 0, 0, 0.3);
+    overflow: hidden;
+    transform: translateY(-20px);
+    backdrop-filter: blur(5px);
+    background-color: rgba(255, 255, 255, 0.9);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.login-card:hover {
+    transform: translateY(-25px);
+    box-shadow: 0 0.8rem 2.5rem rgba(0, 0, 0, 0.4);
+}
+
+.login-card .card-header {
+    background-color: #4e73df;
+    border-bottom: 0;
+    padding: 1.5rem;
+}
+
+.login-card .card-body {
+    padding: 2rem;
+}
+
+.login-card .card-footer {
+    background-color: rgba(248, 249, 250, 0.8);
+    border-top: 0;
+    padding: 1rem;
+}
+
+.login-title {
+    color: white;
+    font-weight: 700;
+    margin-bottom: 0;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.login-form .form-group {
+    margin-bottom: 1.5rem;
+}
+
+.login-form .form-control {
+    border-radius: 0.35rem;
+    font-size: 0.9rem;
+    padding: 1.1rem 1rem;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    background-color: rgba(255, 255, 255, 0.9);
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+    transition: all 0.3s ease;
+}
+
+.login-form .form-control:focus {
+    border-color: #4e73df;
+    box-shadow: 0 0 0 0.2rem rgba(78, 115, 223, 0.25);
+    background-color: #fff;
+}
+
+.login-form .btn-primary {
+    border-radius: 0.35rem;
+    font-size: 0.9rem;
+    font-weight: 600;
+    padding: 0.75rem 1rem;
+    background-color: #4e73df;
+    border: none;
+    box-shadow: 0 4px 6px rgba(50, 50, 93, 0.11), 0 1px 3px rgba(0, 0, 0, 0.08);
+    transition: all 0.3s ease;
+}
+
+.login-form .btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 7px 14px rgba(50, 50, 93, 0.1), 0 3px 6px rgba(0, 0, 0, 0.08);
+    background-color: #3a5ccc;
+}
+
+.login-form .btn-primary:active {
+    transform: translateY(1px);
+}
+
+.login-form label {
+    font-weight: 500;
+    color: #4e73df;
+    margin-bottom: 0.5rem;
+}
+
+.login-form .fas {
+    margin-right: 0.5rem;
+    color: #4e73df;
+}
+
+/* Ajustement pour la navbar sur la page de connexion */
+body:not(.sidebar-collapsed) .container-fluid {
+    margin-left: 0;
+    transition: margin-left 0.3s ease;
+}
+
+/* Styles pour les appareils mobiles */
+@media (max-width: 768px) {
+    .login-container {
+        padding-top: 15%;
+    }
+    
+    .login-card .card-body {
+        padding: 1.5rem;
+    }
+}
+
+/* Style pour le conteneur du formulaire de connexion */
+.col-md-5 {
+    top: 0;
+}
+
+/* Styles pour les colonnes dans la page de détails des tickets */
+div.col-md-6:nth-child(2) {
+  top: 25px;
+}
+
+div.col-md-6:nth-child(1) {
+  top: 23px;
+}
+
+/* Styles pour la navbar */
+.navbar {
+  right: 250px;
+  margin-right: -251px;
+}
+
+/* Modification de la couleur de fond pour bg-primary */
+.bg-primary {
+  background-color: #2f3f63 !important;
 }

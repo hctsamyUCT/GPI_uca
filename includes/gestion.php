@@ -10,6 +10,27 @@ require_once 'functions.php';
 // - Contient les fonctions connectDB(), afficherHeader(), etc.
 
 /*------------------------------
+/* VÉRIFICATION D'AUTHENTIFICATION
+/*------------------------------
+*/
+// Configuration de la session
+configureSession();
+
+// Vérifier si l'utilisateur est connecté
+if (!estConnecte()) {
+    // Redirection explicite avec un message d'erreur
+    header('Location: ../index.php?erreur=Vous devez être connecté pour accéder à cette page');
+    exit();
+}
+
+// Vérifier si l'utilisateur a le rôle approprié (admin ou technicien)
+if ($_SESSION['user_role'] != 1 && $_SESSION['user_role'] != 2) {
+    // Redirection vers la page de création de ticket pour les utilisateurs standard
+    header('Location: ../pages/user/create_ticket.php?erreur=Accès non autorisé');
+    exit();
+}
+
+/*------------------------------
 /* RÉCUPÉRATION DES PARAMÈTRES
 /*------------------------------
 */

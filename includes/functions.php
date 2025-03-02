@@ -22,7 +22,7 @@ function connectDB() {
 }
 
 // Fonction pour afficher l'en-tête HTML
-function afficherHeader($titre, $niveau = 1) {
+function afficherHeader($titre, $niveau = 1, $afficher_sidebar = true) {
     $prefix = str_repeat('../', $niveau);
     
     echo '<!DOCTYPE html>';
@@ -36,45 +36,166 @@ function afficherHeader($titre, $niveau = 1) {
     echo '<link rel="stylesheet" href="' . $prefix . 'assets/css/bootstrap.css">';
     echo '<link rel="stylesheet" href="' . $prefix . 'assets/css/custom.css">';
     
-    // Ajout de jQuery et Bootstrap JS pour les fonctionnalités avancées
-    echo '<script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>';
-    echo '<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/js/bootstrap.bundle.min.js"></script>';
+    // Ajout de Font Awesome pour les icônes
+    echo '<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">';
+    
+    // Ajout de jQuery et Bootstrap 5 JS pour les fonctionnalités avancées
+    echo '<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>';
+    echo '<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>';
     
     echo '</head>';
     echo '<body>';
-    echo '<nav class="navbar navbar-expand-lg navbar-dark bg-primary mb-4">';
-    echo '<div class="container">';
+    
+    // Sidebar à la GLPI (navbar verticale) - seulement si afficher_sidebar est true
+    if ($afficher_sidebar) {
+        echo '<div class="sidebar-glpi">';
+        echo '<div class="sidebar-header">';
+        echo '<a href="' . $prefix . 'index.php" class="logo-container">';
+        echo '<span class="logo-text">GPI</span>';
+        echo '</a>';
+        echo '</div>';
+        
+        echo '<nav class="sidebar-nav">';
+        echo '<ul class="sidebar-menu">';
+        
+        // Menu Parc (visible uniquement pour les admins et techniciens)
+        if (isset($_SESSION['user_role']) && ($_SESSION['user_role'] == 1 || $_SESSION['user_role'] == 2)) {
+            echo '<li class="sidebar-item">';
+            echo '<a href="#" class="sidebar-link">';
+            echo '<i class="fas fa-box sidebar-icon"></i>';
+            echo '<span>Parc</span>';
+            echo '<i class="fas fa-chevron-right sidebar-arrow"></i>';
+            echo '</a>';
+            echo '<ul class="sidebar-submenu">';
+            echo '<li><a href="' . $prefix . 'pages/common/gestion_appareil.php"><i class="fas fa-print"></i>Projecteurs & Imprimantes</a></li>';
+            echo '<li><a href="' . $prefix . 'pages/common/Gestion_unit.php"><i class="fas fa-server"></i>Unités centrales</a></li>';
+            echo '<li><a href="' . $prefix . 'pages/common/gestion_peripherique.php"><i class="fas fa-keyboard"></i>Périphériques</a></li>';
+            echo '<li><a href="' . $prefix . 'pages/common/gestion_poste.php"><i class="fas fa-desktop"></i>Postes</a></li>';
+            echo '</ul>';
+            echo '</li>';
+        }
+        
+        // Menu Assistance (tous les utilisateurs peuvent voir cette section)
+        echo '<li class="sidebar-item">';
+        echo '<a href="#" class="sidebar-link">';
+        echo '<i class="fas fa-headset sidebar-icon"></i>';
+        echo '<span>Assistance</span>';
+        echo '<i class="fas fa-chevron-right sidebar-arrow"></i>';
+        echo '</a>';
+        echo '<ul class="sidebar-submenu">';
+        echo '<li><a href="' . $prefix . 'pages/user/create_ticket.php"><i class="fas fa-ticket-alt"></i>Créer un ticket</a></li>';
+        
+        // Option Gestion des tickets (visible uniquement pour les admins et techniciens)
+        if (isset($_SESSION['user_role']) && ($_SESSION['user_role'] == 1 || $_SESSION['user_role'] == 2)) {
+            echo '<li><a href="' . $prefix . 'pages/admin/manage_tickets.php"><i class="fas fa-tasks"></i>Gestion des tickets</a></li>';
+        }
+        
+        echo '</ul>';
+        echo '</li>';
+        
+        // Menu Configuration (visible uniquement pour les admins)
+        if (isset($_SESSION['user_role']) && $_SESSION['user_role'] == 1) {
+            echo '<li class="sidebar-item">';
+            echo '<a href="#" class="sidebar-link">';
+            echo '<i class="fas fa-cog sidebar-icon"></i>';
+            echo '<span>Configuration</span>';
+            echo '<i class="fas fa-chevron-right sidebar-arrow"></i>';
+            echo '</a>';
+            echo '<ul class="sidebar-submenu">';
+            echo '<li><a href="' . $prefix . 'pages/admin/gestion_references.php"><i class="fas fa-tags"></i>Gestion des salles/marques</a></li>';
+            echo '<li><a href="' . $prefix . 'pages/common/views_all.php"><i class="fas fa-th-list"></i>Vue globale sur le stock</a></li>';
+            echo '<li><a href="' . $prefix . 'pages/admin/gestion_users.php"><i class="fas fa-user-tag"></i>Gestion des utilisateurs</a></li>';
+            echo '<li><a href="' . $prefix . 'pages/admin/statistiques.php"><i class="fas fa-chart-bar"></i>Statistiques</a></li>';
+            echo '</ul>';
+            echo '</li>';
+        }
+        
+        echo '</ul>';
+        echo '</nav>';
+        
+        // Bouton pour réduire le menu
+        echo '<div class="sidebar-footer">';
+        echo '<button class="btn-collapse" id="collapseMenu">';
+        echo '<i class="fas fa-chevron-left"></i>';
+        echo '<span>Réduire le menu</span>';
+        echo '</button>';
+        echo '</div>';
+        echo '</div>';
+    }
+    
+    // Navbar horizontale avec les informations utilisateur - affichée sur toutes les pages
+    echo '<nav class="navbar navbar-expand-lg navbar-dark bg-primary mb-4 fixed-top" style="right: 250px; margin-right: -251px;">';
+    echo '<div class="container d-flex justify-content-between align-items-center">';
+    
+    // Logo ou titre pour la navbar horizontale
     echo '<a class="navbar-brand" href="' . $prefix . 'index.php">GPI</a>';
     
-    // Ajout du bouton de déconnexion si l'utilisateur est connecté
+    // Partie droite de la navbar
+    echo '<div class="d-flex align-items-center">';
+    
+    // Ajout des informations utilisateur et du bouton de déconnexion si l'utilisateur est connecté
     if (isset($_SESSION['user_id'])) {
-        echo '<div class="navbar-nav ml-auto">';
-        echo '<a href="' . $prefix . 'includes/logout.php" class="btn btn-light">Déconnexion</a>';
+        // Récupérer les informations de l'utilisateur
+        $pdo = connectDB();
+        $stmt = $pdo->prepare("SELECT u.nom, u.prenom, r.role_name FROM users u JOIN roles r ON u.id_role = r.id_role WHERE u.id_user = ?");
+        $stmt->execute([$_SESSION['user_id']]);
+        $user = $stmt->fetch();
+        
+        echo '<div class="navbar-user-info mr-3">';
+        echo '<span class="user-name text-white mr-2">' . htmlspecialchars($user['prenom'] . ' ' . $user['nom']) . '</span>';
+        echo '<span class="user-role badge badge-light">' . htmlspecialchars($user['role_name']) . '</span>';
         echo '</div>';
+        
+        echo '<a href="' . $prefix . 'includes/logout.php" class="btn btn-outline-light"><i class="fas fa-sign-out-alt mr-1"></i>Déconnexion</a>';
+    } else {
+        // Afficher le bouton de connexion si l'utilisateur n'est pas connecté
+        echo '<a href="' . $prefix . 'index.php" class="btn btn-outline-light"><i class="fas fa-sign-in-alt mr-1"></i>Connexion</a>';
     }
     
-    echo '</div>';
+    echo '</div>'; // Fin de la partie droite
+    echo '</div>'; // Fin du container
     echo '</nav>';
-    echo '<div class="container">';
     
-    // Système de messages amélioré
-    if(isset($_GET['succes'])) {
-        echo '<div class="alert alert-success alert-dismissible fade show" role="alert">';
-        echo 'Opération réussie !';
-        echo '<button type="button" class="close" data-dismiss="alert" aria-label="Fermer"><span aria-hidden="true">&times;</span></button>';
-        echo '</div>';
-    }
-    if(isset($_GET['erreur'])) {
-        echo '<div class="alert alert-danger alert-dismissible fade show" role="alert">';
-        echo 'Erreur : ' . htmlspecialchars($_GET['erreur']);
-        echo '<button type="button" class="close" data-dismiss="alert" aria-label="Fermer"><span aria-hidden="true">&times;</span></button>';
-        echo '</div>';
+    // Contenu principal avec marge supérieure pour compenser la navbar fixe
+    // Ajuster la classe du conteneur en fonction de la présence de la sidebar
+    if ($afficher_sidebar) {
+        echo '<div class="container" style="margin-top: 35px;">';
+    } else {
+        echo '<div class="container-fluid" style="margin-top: 35px;">';
     }
 }
 
 // Fonction pour afficher le pied de page
 function afficherFooter() {
-    echo '</div>'; // Fermeture du conteneur principal (div class="container")
+    echo '</div>'; // Fermeture du conteneur principal (div class="container" ou "container-fluid")
+    
+    // Script pour la fonctionnalité du menu
+    echo '<script>
+    $(document).ready(function() {
+        // Toggle submenu
+        $(".sidebar-link").click(function(e) {
+            e.preventDefault();
+            $(this).next(".sidebar-submenu").slideToggle(300);
+            $(this).parent().toggleClass("active");
+            $(this).find(".sidebar-arrow").toggleClass("rotate");
+        });
+        
+        // Collapse menu
+        $("#collapseMenu").click(function() {
+            $(".sidebar-glpi").toggleClass("collapsed");
+            $("body").toggleClass("sidebar-collapsed");
+            
+            if ($(".sidebar-glpi").hasClass("collapsed")) {
+                $(this).html(\'<i class="fas fa-chevron-right"></i>\');
+                $(".sidebar-item span, .sidebar-footer span, .logo-text").hide();
+            } else {
+                $(this).html(\'<i class="fas fa-chevron-left"></i><span>Réduire le menu</span>\');
+                $(".sidebar-item span, .sidebar-footer span, .logo-text").show();
+            }
+        });
+    });
+    </script>';
+    
     echo '</body>'; // Fermeture du corps du document
     echo '</html>'; // Fermeture de la balise HTML
 }
@@ -82,10 +203,16 @@ function afficherFooter() {
 // Fonction pour afficher les messages système
 function afficherMessage() {
     if(isset($_GET['succes'])) { // Vérifie la présence d'un message de succès
-        echo '<div class="success">Opération réussie !</div>'; // Affiche un message de succès
+        echo '<div class="alert alert-success alert-dismissible fade show" role="alert">';
+        echo htmlspecialchars($_GET['succes']);
+        echo '<button type="button" class="close" data-dismiss="alert" aria-label="Fermer"><span aria-hidden="true">&times;</span></button>';
+        echo '</div>';
     }
     if(isset($_GET['erreur'])) { // Vérifie la présence d'un message d'erreur
-        echo '<div class="error">Erreur : ' . htmlspecialchars($_GET['erreur']) . '</div>'; // Affiche le message d'erreur
+        echo '<div class="alert alert-danger alert-dismissible fade show" role="alert">';
+        echo 'Erreur : ' . htmlspecialchars($_GET['erreur']);
+        echo '<button type="button" class="close" data-dismiss="alert" aria-label="Fermer"><span aria-hidden="true">&times;</span></button>';
+        echo '</div>';
     }
 }
 
@@ -239,6 +366,39 @@ function estConnecte() {
     // Appeler configureSession qui vérifiera si la session est déjà démarrée
     configureSession();
     return isset($_SESSION['user_id']);
+}
+
+/**
+ * Vérifie si l'utilisateur connecté a un rôle spécifique
+ * @param int|array $roles Le ou les rôles autorisés (1=admin, 2=technicien, 3=utilisateur)
+ * @return bool True si l'utilisateur a le rôle requis, false sinon
+ */
+function aRoleRequis($roles) {
+    // Vérifier si l'utilisateur est connecté
+    if (!estConnecte()) {
+        return false;
+    }
+    
+    // Convertir en tableau si ce n'est pas déjà le cas
+    if (!is_array($roles)) {
+        $roles = [$roles];
+    }
+    
+    // Vérifier si le rôle de l'utilisateur est dans la liste des rôles autorisés
+    return isset($_SESSION['user_role']) && in_array($_SESSION['user_role'], $roles);
+}
+
+/**
+ * Redirige l'utilisateur s'il n'a pas le rôle requis
+ * @param int|array $roles Le ou les rôles autorisés
+ * @param string $redirect_url L'URL de redirection en cas d'échec
+ * @param string $error_message Le message d'erreur à afficher
+ */
+function verifierRole($roles, $redirect_url = '../../index.php', $error_message = 'Accès non autorisé') {
+    if (!aRoleRequis($roles)) {
+        header("Location: $redirect_url?error=" . urlencode($error_message));
+        exit();
+    }
 }
 
 function restaurerAppareil($id_archive) {

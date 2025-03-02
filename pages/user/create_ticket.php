@@ -7,9 +7,13 @@ configureSession();
 // Vérifier si l'utilisateur est connecté
 if (!estConnecte()) {
     // Redirection explicite avec un message d'erreur
-    header('Location: ../login.php?error=Vous devez être connecté');
+    header('Location: ../../index.php?erreur=Vous devez être connecté');
     exit();
 }
+
+// Vérifier si l'utilisateur a le rôle approprié (tous les rôles peuvent accéder à cette page)
+// Mais on peut ajouter une note spécifique pour les utilisateurs standard
+$estUtilisateurStandard = ($_SESSION['user_role'] != 1 && $_SESSION['user_role'] != 2);
 
 $pdo = connectDB();
 
@@ -77,6 +81,8 @@ afficherHeader('Créer un ticket', 2);
 <form method="POST" action="../../includes/ticket_insertt.php" class="needs-validation" novalidate></form>
 <div class="container">
     <h1 class="mb-4">Créer un nouveau ticket</h1>
+    
+    <?php afficherMessage(); ?>
     
     <!-- Formulaire de filtrage -->
     <form method="POST" id="filtreForm">
