@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Droits d'accès par rôle - GPII</title>
+    <link rel="stylesheet" href="assets/css/bootstrap.css">
+    <link rel="stylesheet" href="assets/css/custom.css">
+    <style>
+        .table-access th, .table-access td {
+            text-align: center;
+            vertical-align: middle;
+        }
+        .access-yes {
+            background-color: #d4edda;
+            color: #155724;
+        }
+        .access-no {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+        .access-auth {
+            background-color: #fff3cd;
+            color: #856404;
+        }
+    </style>
+</head>
+<body>
+    <div class="container mt-4">
+        <h1 class="mb-4">Droits d'accès par rôle d'utilisateur</h1>
+        
+        <div class="alert alert-info">
+            <p><strong>Légende :</strong></p>
+            <ul>
+                <li><span class="badge badge-success">Oui</span> : Accès autorisé</li>
+                <li><span class="badge badge-danger">Non</span> : Accès refusé</li>
+                <li><span class="badge badge-warning">Auth</span> : Authentification requise (tout utilisateur connecté)</li>
+            </ul>
+        </div>
+        
+        <div class="table-responsive">
+            <table class="table table-bordered table-striped table-access">
+                <thead class="thead-dark">
+                    <tr>
+                        <th>Page</th>
+                        <th>Visiteur (non connecté)</th>
+                        <th>Technicien (id_role = 2)</th>
+                        <th>Autres rôles (id_role = 3, 4, 5)</th>
+                        <th>Administrateur (id_role = 1)</th>
+                        <th>Description</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Pages principales -->
+                    <tr>
+                        <td class="font-weight-bold">index.php</td>
+                        <td class="access-yes">Oui</td>
+                        <td class="access-yes">Oui</td>
+                        <td class="access-yes">Oui</td>
+                        <td class="access-yes">Oui</td>
+                        <td>Page d'accueil accessible à tous</td>
+                    </tr>
+                    <tr>
+                        <td class="font-weight-bold">login.php</td>
+                        <td class="access-yes">Oui</td>
+                        <td class="access-no">Non (redirection vers index.php)</td>
+                        <td class="access-no">Non (redirection vers index.php)</td>
+                        <td class="access-no">Non (redirection vers index.php)</td>
+                        <td>Page de connexion (inaccessible si déjà connecté)</td>
+                    </tr>
+                    
+                    <!-- Pages d'administration -->
+                    <tr>
+                        <td colspan="6" class="bg-primary text-white">Pages d'administration</td>
+                    </tr>
+                    <tr>
+                        <td>admin/gestion_users.php</td>
+                        <td class="access-no">Non</td>
+                        <td class="access-no">Non</td>
+                        <td class="access-no">Non</td>
+                        <td class="access-yes">Oui</td>
+                        <td>Gestion des utilisateurs (admin uniquement)</td>
+                    </tr>
+                    <tr>
+                        <td>admin/ajouter_user.php</td>
+                        <td class="access-no">Non</td>
+                        <td class="access-no">Non</td>
+                        <td class="access-no">Non</td>
+                        <td class="access-yes">Oui</td>
+                        <td>Ajout d'utilisateurs (admin uniquement)</td>
+                    </tr>
+                    <tr>
+                        <td>admin/modifier_user.php</td>
+                        <td class="access-no">Non</td>
+                        <td class="access-no">Non</td>
+                        <td class="access-no">Non</td>
+                        <td class="access-yes">Oui</td>
+                        <td>Modification d'utilisateurs (admin uniquement)</td>
+                    </tr>
+                    <tr>
+                        <td>admin/gestion_references.php</td>
+                        <td class="access-no">Non</td>
+                        <td class="access-no">Non</td>
+                        <td class="access-no">Non</td>
+                        <td class="access-yes">Oui</td>
+                        <td>Gestion des références (salles, marques)</td>
+                    </tr>
+                    
+                    <!-- Pages utilisateur -->
+                    <tr>
+                        <td colspan="6" class="bg-primary text-white">Pages utilisateur</td>
+                    </tr>
+                    <tr>
+                        <td>user/create_ticket.php</td>
+                        <td class="access-no">Non</td>
+                        <td class="access-auth">Auth</td>
+                        <td class="access-auth">Auth</td>
+                        <td class="access-auth">Auth</td>
+                        <td>Création de tickets (utilisateurs connectés)</td>
+                    </tr>
+                    <tr>
+                        <td>user/manage_tickets.php</td>
+                        <td class="access-no">Non</td>
+                        <td class="access-auth">Auth</td>
+                        <td class="access-auth">Auth</td>
+                        <td class="access-auth">Auth</td>
+                        <td>Gestion des tickets (utilisateurs connectés)</td>
+                    </tr>
+                    <tr>
+                        <td>user/ticket_details.php</td>
+                        <td class="access-no">Non</td>
+                        <td class="access-auth">Auth</td>
+                        <td class="access-auth">Auth</td>
+                        <td class="access-auth">Auth</td>
+                        <td>Détails des tickets (utilisateurs connectés)</td>
+                    </tr>
+                    
+                    <!-- Pages communes -->
+                    <tr>
+                        <td colspan="6" class="bg-primary text-white">Pages communes</td>
+                    </tr>
+                    <tr>
+                        <td>common/views_all.php</td>
+                        <td class="access-yes">Oui</td>
+                        <td class="access-auth">Auth</td>
+                        <td class="access-auth">Auth</td>
+                        <td class="access-auth">Auth</td>
+                        <td>Vue globale du matériel (accessible à tous)</td>
+                    </tr>
+                    <tr>
+                        <td>common/Gestion_appareil.php</td>
+                        <td class="access-no">Non</td>
+                        <td class="access-auth">Auth</td>
+                        <td class="access-no">Non</td>
+                        <td class="access-auth">Auth</td>
+                        <td>Gestion des appareils (techniciens et admin)</td>
+                    </tr>
+                    <tr>
+                        <td>common/Gestion_unit.php</td>
+                        <td class="access-no">Non</td>
+                        <td class="access-auth">Auth</td>
+                        <td class="access-no">Non</td>
+                        <td class="access-auth">Auth</td>
+                        <td>Gestion des unités (techniciens et admin)</td>
+                    </tr>
+                    <tr>
+                        <td>common/gestion_peripherique.php</td>
+                        <td class="access-no">Non</td>
+                        <td class="access-auth">Auth</td>
+                        <td class="access-no">Non</td>
+                        <td class="access-auth">Auth</td>
+                        <td>Gestion des périphériques (techniciens et admin)</td>
+                    </tr>
+                    <tr>
+                        <td>common/gestion_poste.php</td>
+                        <td class="access-no">Non</td>
+                        <td class="access-auth">Auth</td>
+                        <td class="access-no">Non</td>
+                        <td class="access-auth">Auth</td>
+                        <td>Gestion des postes (techniciens et admin)</td>
+                    </tr>
+                    
+                    <!-- Pages d'archives -->
+                    <tr>
+                        <td colspan="6" class="bg-primary text-white">Pages d'archives</td>
+                    </tr>
+                    <tr>
+                        <td>archives/archives_appareil.php</td>
+                        <td class="access-no">Non</td>
+                        <td class="access-auth">Auth</td>
+                        <td class="access-no">Non</td>
+                        <td class="access-auth">Auth</td>
+                        <td>Archives des appareils (techniciens et admin)</td>
+                    </tr>
+                    <tr>
+                        <td>archives/archives_peripherique.php</td>
+                        <td class="access-no">Non</td>
+                        <td class="access-auth">Auth</td>
+                        <td class="access-no">Non</td>
+                        <td class="access-auth">Auth</td>
+                        <td>Archives des périphériques (techniciens et admin)</td>
+                    </tr>
+                    <tr>
+                        <td>archives/archives_unite.php</td>
+                        <td class="access-no">Non</td>
+                        <td class="access-auth">Auth</td>
+                        <td class="access-no">Non</td>
+                        <td class="access-auth">Auth</td>
+                        <td>Archives des unités (techniciens et admin)</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        
+        <div class="mt-4 mb-4">
+            <h3>Résumé des droits d'accès</h3>
+            <ul>
+                <li><strong>Visiteur (non connecté) :</strong> Accès uniquement à la page d'accueil et à la page de connexion.</li>
+                <li><strong>Technicien (id_role = 2) :</strong> Accès à toutes les pages communes, utilisateur, archives et gestion du matériel, mais pas aux pages d'administration.</li>
+                <li><strong>Autres rôles (id_role = 3, 4, 5) :</strong> Accès limité aux pages utilisateur et à la vue globale du matériel, mais pas aux pages de gestion du matériel ni aux archives.</li>
+                <li><strong>Administrateur (id_role = 1) :</strong> Accès complet à toutes les pages du site, y compris les pages d'administration.</li>
+            </ul>
+        </div>
+        
+        <div class="mt-4">
+            <a href="index.php" class="btn btn-primary">Retour à l'accueil</a>
+        </div>
+    </div>
+</body>
+</html>

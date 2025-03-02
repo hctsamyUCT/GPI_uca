@@ -1,0 +1,261 @@
+/* Import Bootstrap core */
+@import url('https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css');
+@import url('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css');
+
+/* Variables de couleurs */
+:root {
+  /* Couleurs principales */
+  --primary: #007bff;
+  --primary-dark: #0056b3;
+  --secondary: #6c757d;
+  --success: #28a745;
+  --danger: #dc3545;
+  --warning: #ffc107;
+  --info: #17a2b8;
+  --light: #f8f9fa;
+  --dark: #343a40;
+  
+  /* Couleurs d'état de ticket */
+  --ticket-open: #dc3545;
+  --ticket-in-progress: #ffc107;
+  --ticket-resolved: #28a745;
+  --ticket-not-resolved: #6c757d;
+  
+  /* Couleurs pour les matériels */
+  --printer-color: #dc3545;
+  --projector-color: #ffc107;
+  --computer-color: #28a745;
+  --keyboard-color: #6610f2;
+  --mouse-color: #fd7e14;
+  --screen-color: #20c997;
+  --server-color: #6f42c1;
+  
+  /* Couleurs pour les éléments supprimés */
+  --deleted-bg: #e9ecef;
+  --deleted-text: #495057;
+  
+  /* Espacement commun */
+  --spacing-xxs: 0.25rem;
+  --spacing-xs: 0.5rem;
+  --spacing-sm: 0.75rem;
+  --spacing-md: 1rem;
+  --spacing-lg: 1.5rem;
+  --spacing-xl: 2rem;
+  
+  /* Ombres */
+  --shadow-sm: 0 2px 5px rgba(0,0,0,0.05);
+  --shadow-md: 0 2px 10px rgba(0,0,0,0.1);
+  --shadow-lg: 0 5px 15px rgba(0,0,0,0.1);
+  
+  /* Rayons de bordure */
+  --radius-sm: 4px;
+  --radius-md: 6px;
+  --radius-lg: 8px;
+  --radius-round: 50%;
+}
+
+/* Extensions Bootstrap pour fonctionnalités supplémentaires */
+/* Utilisées dans les pages ticket_details.php et manage_tickets.php */
+
+/* Espacement */
+.p-3 {
+  padding: 1rem;
+}
+
+.mb-0 {
+  margin-bottom: 0;
+}
+
+.mb-2 {
+  margin-bottom: 0.5rem;
+}
+
+.mb-3 {
+  margin-bottom: 1rem;
+}
+
+.mb-4 {
+  margin-bottom: 1.5rem;
+}
+
+.mr-1 {
+  margin-right: 0.25rem;
+}
+
+.mr-2 {
+  margin-right: 0.5rem;
+}
+
+.mr-3 {
+  margin-right: 1rem;
+}
+
+.py-0\.5 {
+  padding-top: 0.125rem;
+  padding-bottom: 0.125rem;
+}
+
+.px-2\.5 {
+  padding-left: 0.625rem;
+  padding-right: 0.625rem;
+}
+
+/* Utilitaires de texte */
+.text-xs {
+  font-size: 0.75rem;
+}
+
+.text-sm {
+  font-size: 0.875rem;
+}
+
+.font-medium {
+  font-weight: 500;
+}
+
+.font-semibold {
+  font-weight: 600;
+}
+
+/* Polices */
+body, button, input, select, textarea {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* Utilitaires Flexbox */
+.d-flex {
+  display: flex;
+}
+
+.align-items-center {
+  align-items: center;
+}
+
+.justify-content-center {
+  justify-content: center;
+}
+
+.justify-content-between {
+  justify-content: space-between;
+}
+
+/* Typographie */
+h1, h2, h3, h4, h5, h6 {
+  margin-top: 0;
+  font-weight: 500;
+  line-height: 1.2;
+}
+
+/* Animations */
+.transition {
+  transition-property: background-color, border-color, color, fill, stroke, opacity, box-shadow, transform;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 150ms;
+}
+
+.transition-all {
+  transition-property: all;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 150ms;
+}
+
+/* Helper classes pour les composants de page */
+.sticky-top {
+  position: -webkit-sticky;
+  position: sticky;
+  top: 0;
+  z-index: 1020;
+}
+
+/* Ombres */
+.shadow-sm {
+  box-shadow: var(--shadow-sm);
+}
+
+.shadow {
+  box-shadow: var(--shadow-md);
+}
+
+.shadow-lg {
+  box-shadow: var(--shadow-lg);
+}
+
+/* Bordures */
+.border-0 {
+  border: 0 !important;
+}
+
+.rounded {
+  border-radius: var(--radius-sm);
+}
+
+.rounded-md {
+  border-radius: var(--radius-md);
+}
+
+.rounded-lg {
+  border-radius: var(--radius-lg);
+}
+
+/* Background utilities */
+.bg-white {
+  background-color: #fff;
+}
+
+.bg-light {
+  background-color: var(--light);
+}
+
+.bg-primary {
+  background-color: var(--primary);
+}
+
+/* Ajoutez ces styles pour la modal */
+.modal-confirm {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 1000;
+}
+
+.modal-confirm:target {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.modal-content {
+    background: white;
+    padding: 20px;
+    border-radius: 5px;
+    max-width: 400px;
+    width: 100%;
+    position: relative;
+}
+
+.modal-header {
+    border-bottom: 1px solid #dee2e6;
+    padding-bottom: 1rem;
+    margin-bottom: 1rem;
+}
+
+.modal-footer {
+    border-top: 1px solid #dee2e6;
+    padding-top: 1rem;
+    margin-top: 1rem;
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+}
+
+.modal-close {
+    position: absolute;
+    right: 10px;
+    top: 10px;
+    text-decoration: none;
+    color: #000;
+}
