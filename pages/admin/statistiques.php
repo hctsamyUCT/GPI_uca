@@ -222,15 +222,30 @@ afficherHeader('Statistiques du parc informatique', 2);
     <!-- Débogage des données -->
     <?php if ($_SESSION['user_role'] == 1): ?>
     <div class="card mb-4">
-        <div class="card-header bg-secondary text-white">
+        <div class="card-header bg-primary text-white">
             <h5 class="card-title mb-0">Débogage des données (visible uniquement pour l'admin)</h5>
         </div>
         <div class="card-body">
-            <h6>Données pour l'analyse des pannes par type d'équipement et marque:</h6>
-            <pre><?php print_r($stats_panne_type_marque); ?></pre>
+            <div class="row">
+                <div class="col-md-12 mb-4">
+                    <h6>Analyse des pannes par type d'équipement et marque:</h6>
+                    <canvas id="chartDebugTypesMarques" width="800" height="400"></canvas>
+                </div>
+                <div class="col-md-12 mb-4">
+                    <h6>Évolution des pannes dans le temps:</h6>
+                    <canvas id="chartDebugEvolution" width="800" height="300"></canvas>
+                </div>
+            </div>
             
-            <h6>Données pour l'évolution des pannes dans le temps:</h6>
-            <pre><?php print_r($stats_evolution_pannes); ?></pre>
+            <!-- Données brutes pour référence -->
+            <div class="collapse" id="rawData">
+                <h6>Données brutes:</h6>
+                <pre><?php print_r($stats_panne_type_marque); ?></pre>
+                <pre><?php print_r($stats_evolution_pannes); ?></pre>
+            </div>
+            <button class="btn btn-secondary btn-sm mt-2" type="button" data-bs-toggle="collapse" data-bs-target="#rawData" aria-expanded="false" aria-controls="rawData">
+                Afficher/Masquer les données brutes
+            </button>
         </div>
     </div>
     <?php endif; ?>
@@ -441,16 +456,188 @@ afficherHeader('Statistiques du parc informatique', 2);
     <script>
     // Préparation des données pour les graphiques
     document.addEventListener('DOMContentLoaded', function() {
-        // Couleurs pour les graphiques
+        // Palette de couleurs améliorée pour les graphiques
+        const colorPalette = [
+            'rgba(54, 162, 235, 0.8)',    // bleu
+            'rgba(75, 192, 192, 0.8)',    // vert-bleu
+            'rgba(255, 99, 132, 0.8)',    // rose
+            'rgba(255, 159, 64, 0.8)',    // orange
+            'rgba(153, 102, 255, 0.8)',   // violet
+            'rgba(255, 205, 86, 0.8)',    // jaune
+            'rgba(201, 203, 207, 0.8)',   // gris
+            'rgba(40, 167, 69, 0.8)',     // vert
+            'rgba(111, 66, 193, 0.8)',    // indigo
+            'rgba(23, 162, 184, 0.8)',    // cyan
+            'rgba(220, 53, 69, 0.8)',     // rouge
+            'rgba(255, 193, 7, 0.8)',     // ambre
+            'rgba(0, 123, 255, 0.8)',     // bleu primaire
+            'rgba(108, 117, 125, 0.8)',   // gris secondaire
+            'rgba(40, 167, 69, 0.8)'      // vert succès
+        ];
+        
+        const borderColors = colorPalette.map(color => color.replace('0.8', '1'));
+        
+        // Fonction pour générer des couleurs dynamiques
+        function generateColors(count) {
+            const colors = [];
+            for (let i = 0; i < count; i++) {
+                colors.push(colorPalette[i % colorPalette.length]);
+            }
+            return colors;
+        }
+        
+        // Fonction pour générer des couleurs de bordure
+        function generateBorderColors(count) {
+            const colors = [];
+            for (let i = 0; i < count; i++) {
+                colors.push(borderColors[i % borderColors.length]);
+            }
+            return colors;
+        }
+        
+        // Couleurs pour les graphiques (pour la compatibilité avec le code existant)
         const colors = {
-            blue: 'rgba(54, 162, 235, 0.8)',
-            green: 'rgba(75, 192, 192, 0.8)',
-            red: 'rgba(255, 99, 132, 0.8)',
-            orange: 'rgba(255, 159, 64, 0.8)',
-            purple: 'rgba(153, 102, 255, 0.8)',
-            yellow: 'rgba(255, 205, 86, 0.8)',
-            grey: 'rgba(201, 203, 207, 0.8)'
+            blue: colorPalette[0],
+            green: colorPalette[1],
+            red: colorPalette[2],
+            orange: colorPalette[3],
+            purple: colorPalette[4],
+            yellow: colorPalette[5],
+            grey: colorPalette[6]
         };
+        
+        // NOUVEAUX GRAPHIQUES POUR LE DÉBOGAGE
+        
+        // Graphique pour l'analyse des pannes par type d'équipement et marque
+        if (document.getElementById('chartDebugTypesMarques')) {
+            const debugData = <?= json_encode($stats_panne_type_marque) ?>;
+            
+            // Regrouper par type d'équipement
+            const typeGroups = {};
+            debugData.forEach(item => {
+                if (!typeGroups[item.type]) {
+                    typeGroups[item.type] = [];
+                }
+                typeGroups[item.type].push(item);
+            });
+            
+            // Préparer les jeux de données
+            const datasets = [];
+            let colorIndex = 0;
+            
+            Object.keys(typeGroups).forEach(type => {
+                datasets.push({
+                    label: type,
+                    data: typeGroups[type].map(item => item.taux_panne),
+                    backgroundColor: colorPalette[colorIndex % colorPalette.length],
+                    borderColor: borderColors[colorIndex % borderColors.length],
+                    borderWidth: 1
+                });
+                colorIndex++;
+            });
+            
+            // Obtenir les marques uniques
+            const uniqueMarques = Array.from(new Set(debugData.map(item => item.nom_marque)));
+            
+            new Chart(document.getElementById('chartDebugTypesMarques'), {
+                type: 'bar',
+                data: {
+                    labels: uniqueMarques,
+                    datasets: datasets
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                        },
+                        title: {
+                            display: true,
+                            text: 'Taux de panne par type d\'équipement et marque'
+                        },
+                        tooltip: {
+                            callbacks: {
+                                afterLabel: function(context) {
+                                    const datasetIndex = context.datasetIndex;
+                                    const index = context.dataIndex;
+                                    const label = context.chart.data.labels[index];
+                                    const type = context.chart.data.datasets[datasetIndex].label;
+                                    
+                                    // Trouver l'élément correspondant dans les données
+                                    const item = debugData.find(i => i.type === type && i.nom_marque === label);
+                                    if (item) {
+                                        return [
+                                            `Total: ${item.total}`,
+                                            `En panne: ${item.en_panne}`
+                                        ];
+                                    }
+                                    return '';
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: 'Taux de panne (%)'
+                            }
+                        }
+                    }
+                }
+            });
+        }
+        
+        // Graphique pour l'évolution des pannes
+        if (document.getElementById('chartDebugEvolution')) {
+            const evolutionData = <?= json_encode($stats_evolution_pannes) ?>;
+            
+            new Chart(document.getElementById('chartDebugEvolution'), {
+                type: 'line',
+                data: {
+                    labels: evolutionData.map(item => item.mois),
+                    datasets: [{
+                        label: 'Signalements de pannes',
+                        data: evolutionData.map(item => item.nombre_tickets),
+                        fill: false,
+                        backgroundColor: colorPalette[2], // rose/rouge
+                        borderColor: borderColors[2],
+                        tension: 0.2,
+                        pointBackgroundColor: borderColors[2],
+                        pointRadius: 5,
+                        pointHoverRadius: 7
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                        },
+                        title: {
+                            display: true,
+                            text: 'Évolution des signalements de pannes par mois'
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: 'Nombre de tickets'
+                            }
+                        },
+                        x: {
+                            title: {
+                                display: true,
+                                text: 'Mois'
+                            }
+                        }
+                    }
+                }
+            });
+        }
         
         // 1. Graphique global
         new Chart(document.getElementById('chartGlobal'), {
@@ -461,12 +648,16 @@ afficherHeader('Statistiques du parc informatique', 2);
                     {
                         label: 'Total',
                         data: <?= json_encode(array_column($stats_globales, 'total')) ?>,
-                        backgroundColor: colors.blue
+                        backgroundColor: colorPalette[0], // bleu
+                        borderColor: borderColors[0],
+                        borderWidth: 1
                     },
                     {
                         label: 'En panne',
                         data: <?= json_encode(array_column($stats_globales, 'en_panne')) ?>,
-                        backgroundColor: colors.red
+                        backgroundColor: colorPalette[2], // rouge
+                        borderColor: borderColors[2],
+                        borderWidth: 1
                     }
                 ]
             },
@@ -479,6 +670,21 @@ afficherHeader('Statistiques du parc informatique', 2);
                     title: {
                         display: true,
                         text: 'État global du parc informatique'
+                    },
+                    tooltip: {
+                        callbacks: {
+                            afterLabel: function(context) {
+                                const index = context.dataIndex;
+                                const datasetIndex = context.datasetIndex;
+                                if (datasetIndex === 1) { // Dataset "En panne"
+                                    const total = <?= json_encode(array_column($stats_globales, 'total')) ?>[index];
+                                    const enPanne = <?= json_encode(array_column($stats_globales, 'en_panne')) ?>[index];
+                                    const pourcentage = (enPanne / total * 100).toFixed(2);
+                                    return `Taux de panne: ${pourcentage}%`;
+                                }
+                                return '';
+                            }
+                        }
                     }
                 },
                 scales: {
@@ -496,7 +702,9 @@ afficherHeader('Statistiques du parc informatique', 2);
                 labels: <?= json_encode(array_column($stats_type_appareils, 'type')) ?>,
                 datasets: [{
                     data: <?= json_encode(array_column($stats_type_appareils, 'total')) ?>,
-                    backgroundColor: [colors.blue, colors.green, colors.red, colors.orange, colors.purple]
+                    backgroundColor: generateColors(<?= count($stats_type_appareils) ?>),
+                    borderColor: generateBorderColors(<?= count($stats_type_appareils) ?>),
+                    borderWidth: 1
                 }]
             },
             options: {
@@ -522,12 +730,16 @@ afficherHeader('Statistiques du parc informatique', 2);
                     {
                         label: 'Opérationnel',
                         data: <?= json_encode(array_column($stats_marque, 'operationnel')) ?>,
-                        backgroundColor: colors.green
+                        backgroundColor: colorPalette[1], // vert-bleu
+                        borderColor: borderColors[1],
+                        borderWidth: 1
                     },
                     {
                         label: 'En panne',
                         data: <?= json_encode(array_column($stats_marque, 'en_panne')) ?>,
-                        backgroundColor: colors.red
+                        backgroundColor: colorPalette[2], // rose/rouge
+                        borderColor: borderColors[2],
+                        borderWidth: 1
                     }
                 ]
             },
@@ -562,7 +774,9 @@ afficherHeader('Statistiques du parc informatique', 2);
                 datasets: [{
                     label: 'Appareils en panne',
                     data: <?= json_encode(array_column($stats_salle, 'en_panne')) ?>,
-                    backgroundColor: colors.red
+                    backgroundColor: colorPalette[2], // rose/rouge
+                    borderColor: borderColors[2],
+                    borderWidth: 1
                 }]
             },
             options: {
@@ -587,7 +801,9 @@ afficherHeader('Statistiques du parc informatique', 2);
                 labels: <?= json_encode(array_column($stats_peripheriques, 'type')) ?>,
                 datasets: [{
                     data: <?= json_encode(array_column($stats_peripheriques, 'total')) ?>,
-                    backgroundColor: [colors.blue, colors.green, colors.orange]
+                    backgroundColor: generateColors(<?= count($stats_peripheriques) ?>),
+                    borderColor: generateBorderColors(<?= count($stats_peripheriques) ?>),
+                    borderWidth: 1
                 }]
             },
             options: {
@@ -615,7 +831,9 @@ afficherHeader('Statistiques du parc informatique', 2);
                 labels: unitesLabels,
                 datasets: [{
                     data: unitesValues,
-                    backgroundColor: [colors.green, colors.red]
+                    backgroundColor: [colorPalette[1], colorPalette[2]], // vert-bleu pour opérationnel, rose/rouge pour en panne
+                    borderColor: [borderColors[1], borderColors[2]],
+                    borderWidth: 1
                 }]
             },
             options: {
@@ -640,8 +858,8 @@ afficherHeader('Statistiques du parc informatique', 2);
                 datasets: [{
                     label: 'Taux de panne (%)',
                     data: <?= json_encode(array_column($stats_taux_panne_marque, 'taux_panne')) ?>,
-                    backgroundColor: colors.red,
-                    borderColor: 'rgba(255, 99, 132, 1)',
+                    backgroundColor: colorPalette[2], // rose/rouge
+                    borderColor: borderColors[2],
                     borderWidth: 1
                 }]
             },
@@ -687,8 +905,8 @@ afficherHeader('Statistiques du parc informatique', 2);
                 datasets: [{
                     label: 'Taux de panne (%)',
                     data: <?= json_encode(array_column($stats_taux_panne_peripheriques, 'taux_panne')) ?>,
-                    backgroundColor: colors.orange,
-                    borderColor: 'rgba(255, 159, 64, 1)',
+                    backgroundColor: colorPalette[3], // orange
+                    borderColor: borderColors[3],
                     borderWidth: 1
                 }]
             },
@@ -734,10 +952,16 @@ afficherHeader('Statistiques du parc informatique', 2);
                 datasets: [{
                     label: 'Nombre de signalements de pannes',
                     data: <?= json_encode(array_column($stats_evolution_pannes, 'nombre_tickets')) ?>,
-                    fill: false,
-                    backgroundColor: colors.red,
-                    borderColor: 'rgba(255, 99, 132, 1)',
-                    tension: 0.1
+                    fill: {
+                        target: 'origin',
+                        above: 'rgba(255, 99, 132, 0.2)'
+                    },
+                    backgroundColor: colorPalette[2], // rose/rouge
+                    borderColor: borderColors[2],
+                    tension: 0.2,
+                    pointBackgroundColor: borderColors[2],
+                    pointRadius: 5,
+                    pointHoverRadius: 7
                 }]
             },
             options: {
@@ -777,8 +1001,8 @@ afficherHeader('Statistiques du parc informatique', 2);
                 datasets: [{
                     label: 'Taux de panne (%)',
                     data: <?= json_encode(array_column($stats_comparaison_categories, 'taux_panne')) ?>,
-                    backgroundColor: colors.red,
-                    borderColor: 'rgba(255, 99, 132, 1)',
+                    backgroundColor: generateColors(<?= count($stats_comparaison_categories) ?>),
+                    borderColor: generateBorderColors(<?= count($stats_comparaison_categories) ?>),
                     borderWidth: 1
                 }]
             },
@@ -794,9 +1018,8 @@ afficherHeader('Statistiques du parc informatique', 2);
                     }
                 },
                 scales: {
-                    x: {
+                    y: {
                         beginAtZero: true,
-                        max: 100,
                         title: {
                             display: true,
                             text: 'Taux de panne (%)'
