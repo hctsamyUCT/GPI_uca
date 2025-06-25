@@ -33,15 +33,15 @@ if ($_SESSION['user_role'] != 1 && $_SESSION['user_role'] != 2) {
 /* CONFIGURATION DE LA PAGE
 /*------------------------------
 */
-afficherHeader('Gestion du parc informatique', 2);
+afficherHeader('Gestion des Imprimante & Projecteur', 2);
 // Appel de la fonction générant l'en-tête HTML :
 // - Paramètre : titre de la page entre guillemets simples
 // - Génère : doctype, html, head, meta, title, link CSS, body, nav
 // - Le titre est échappé via htmlspecialchars() dans la fonction
 ?>
 
-<div class="mb-4">
-    <h1 class="mb-3 text-gradient">Liste des appareils</h1>
+<div class="container-fluid mt-4">
+    <h1 class="mb-4 text-gradient">Gestion des Imprimante & Projecteur</h1>
     
     <div class="card mb-4 shadow-sm">
         <div class="card-body p-3">
@@ -60,6 +60,10 @@ afficherHeader('Gestion du parc informatique', 2);
                 
                 <a href="../../includes/export.php?type=csv&source=appareils" class="btn btn-gradient-info px-3 py-2">
                     <i class="fas fa-file-csv me-2"></i>CSV
+                </a>
+                
+                <a href="../../includes/export.php?type=xlsx&source=appareils" class="btn btn-gradient-info px-3 py-2">
+                    <i class="fas fa-file-excel me-2"></i>XLSX
                 </a>
                 
                 <button id="copyNames" class="btn btn-gradient-info px-3 py-2">

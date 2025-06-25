@@ -216,6 +216,9 @@ function buildFilterQuery($type, $filters) {
 }
 
 function getSearchForm($search = '', $columns = []) {
+    if ($search === null) {
+        $search = '';
+    }
     $html = '<div class="card mb-4">
         <div class="card-body">
             <form method="GET" class="row">

@@ -75,6 +75,14 @@ try {
             $stmt->execute($params);
             $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
             
+            // Remplacer les salles vides par 'Non assigné'
+            foreach ($data as &$row) {
+                if (empty($row['nom_salle'])) {
+                    $row['nom_salle'] = 'Non assigné';
+                }
+            }
+            unset($row);
+            
             // Configuration de l'export
             $filename = 'export_appareils_' . date('Y-m-d');
             $headers = ['Type', 'Modèle', 'Numéro de série', 'Marque', 'Salle', 'État'];
@@ -378,11 +386,13 @@ try {
             $orientation = ($type === 'pdf_paysage') ? 'landscape' : 'portrait';
             exportHTML($data, $headers, $filename, $orientation, $source);
             break;
-            
         case 'csv':
             exportCSV($data, $headers, $filename);
             break;
-            
+        case 'xlsx':
+            require_once 'xlsxwriter.class.php';
+            exportXLSX($data, $headers, $filename);
+            break;
         default:
             header('Location: ../index.php?erreur=Type d\'exportation non valide');
             exit();
@@ -711,5 +721,20 @@ function exportCSV($data, $headers, $filename) {
     }
     
     fclose($output);
+}
+
+function exportXLSX($data, $headers, $filename) {
+    $writer = new XLSXWriter();
+    $writer->writeSheetHeader('Sheet1', array_fill_keys($headers, 'string'));
+
+    foreach ($data as $row) {
+        $writer->writeSheetRow('Sheet1', array_values($row));
+    }
+
+    header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+    header('Content-Disposition: attachment;filename="' . $filename . '.xlsx"');
+    header('Cache-Control: max-age=0');
+
+    $writer->writeToStdOut();
     exit();
-} 
+}

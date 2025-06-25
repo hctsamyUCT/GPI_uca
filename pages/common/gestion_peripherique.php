@@ -99,6 +99,7 @@ try {
             </button>
             <ul class="dropdown-menu" aria-labelledby="exportDropdown">
                 <li><a class="dropdown-item" href="../../includes/export.php?source=peripherique&type=csv"><i class="fas fa-file-csv mr-2"></i>CSV</a></li>
+                <li><a class="dropdown-item" href="../../includes/export.php?source=peripherique&type=xlsx"><i class="fas fa-file-excel mr-2"></i>XLSX</a></li>
                 <li><a class="dropdown-item" href="../../includes/export.php?source=peripherique&type=pdf_paysage"><i class="fas fa-file-pdf mr-2"></i>Page courante en PDF paysage</a></li>
                 <li><a class="dropdown-item" href="../../includes/export.php?source=peripherique&type=pdf_portrait"><i class="fas fa-file-pdf mr-2"></i>Page courante en PDF portrait</a></li>
             </ul>

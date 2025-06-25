@@ -27,76 +27,49 @@ try {
     // Vérification de la structure de la table poste
     $checkColumnStmt = $pdo->query("SHOW COLUMNS FROM poste LIKE 'supprime_le'");
     $hasSupprimeLe = $checkColumnStmt->rowCount() > 0;
-    
-    // Récupération des filtres
-    $filters = [
-        'etat' => $_GET['etat'] ?? '',
-        'id_salle' => $_GET['id_salle'] ?? ''
-    ];
-    
-    // Enregistrement des filtres dans la session pour l'exportation
-    $_SESSION['filters']['poste'] = $filters;
 
-    $search = $_GET['search'] ?? '';
-
+    // Préparation des filtres
+    $etat = isset($_GET['etat']) && $_GET['etat'] !== '' ? $_GET['etat'] : null;
+    $id_salle = isset($_GET['id_salle']) && $_GET['id_salle'] !== '' ? $_GET['id_salle'] : null;
+    $search = isset($_GET['search']) && $_GET['search'] !== '' ? $_GET['search'] : null;
     $searchColumns = [
         'nom_poste' => 'Nom du poste'
     ];
 
-    echo getFilterForm('poste', $filters);
+    // Affichage du formulaire de filtre (état, salle)
+    echo getFilterForm('poste', $_GET);
+    // Affichage du formulaire de recherche textuelle
     echo getSearchForm($search, $searchColumns);
 
-    if (!empty($search)) {
-        $selectedColumns = $_GET['search_columns'] ?? [];
-        $whereClauses = [];
-        $searchParams = [];
-        
-        if (empty($selectedColumns) || in_array('all', $selectedColumns)) {
-            $whereClauses = ["p.nom_poste LIKE ?"];
-            $searchParams = ["%$search%"];
-        } else {
-            foreach ($selectedColumns as $column) {
-                if ($column === 'nom_poste') {
-                    $whereClauses[] = "p.nom_poste LIKE ?";
-                    $searchParams[] = "%$search%";
-                }
-            }
-        }
-        
-        if (!empty($whereClauses)) {
-            $finalQuery .= " AND (" . implode(" OR ", $whereClauses) . ")";
-            $params = array_merge($filterData['params'], $searchParams);
-        }
+    // Construction de la requête SQL améliorée
+    $sql = "SELECT 
+        p.*, 
+        s.nom_salle, 
+        GROUP_CONCAT(DISTINCT periph.type SEPARATOR ', ') AS peripheriques,
+        u.numero_inventaire AS unite
+    FROM poste p
+    JOIN salles s ON p.id_salle = s.id_salle
+    LEFT JOIN poste_peripherique pp ON p.id_poste = pp.id_poste
+    LEFT JOIN peripherique periph ON pp.id_peripherique = periph.id_peripherique AND periph.supprime_le IS NULL
+    LEFT JOIN poste_unite pu ON p.id_poste = pu.id_poste
+    LEFT JOIN unite u ON pu.id_unite = u.id_unite AND u.supprime_le IS NULL
+    WHERE 1";
+    $params = [];
+    if ($etat) {
+        $sql .= " AND p.etat = :etat";
+        $params[':etat'] = $etat;
     }
-
-    // Construction de la requête avec filtres
-    $baseQuery = "SELECT p.*, s.nom_salle, 
-                  GROUP_CONCAT(periph.type SEPARATOR ', ') AS peripheriques,
-                  u.numero_inventaire AS unite
-                  FROM poste p
-                  JOIN salles s ON p.id_salle = s.id_salle
-                  LEFT JOIN poste_peripherique pp ON p.id_poste = pp.id_poste
-                  LEFT JOIN peripherique periph ON pp.id_peripherique = periph.id_peripherique";
-    
-    if ($hasSupprimeLe) {
-        $baseQuery .= " AND periph.supprime_le IS NULL";
+    if ($id_salle) {
+        $sql .= " AND p.id_salle = :id_salle";
+        $params[':id_salle'] = $id_salle;
     }
-    
-    $baseQuery .= " LEFT JOIN poste_unite pu ON p.id_poste = pu.id_poste
-                    LEFT JOIN unite u ON pu.id_unite = u.id_unite";
-    
-    if ($hasSupprimeLe) {
-        $baseQuery .= " AND u.supprime_le IS NULL
-                        WHERE p.supprime_le IS NULL";
-    } else {
-        $baseQuery .= " WHERE 1=1";
+    if ($search) {
+        $sql .= " AND (p.nom_poste LIKE :search)";
+        $params[':search'] = "%$search%";
     }
-
-    $filterData = buildFilterQuery('poste', $filters);
-    $finalQuery = $baseQuery . $filterData['clause'] . " GROUP BY p.id_poste ORDER BY p.nom_poste";
-    
-    $stmt = $pdo->prepare($finalQuery);
-    $stmt->execute($filterData['params']);
+    $sql .= " GROUP BY p.id_poste ORDER BY p.nom_poste";
+    $stmt = $pdo->prepare($sql);
+    $stmt->execute($params);
     $postes = $stmt->fetchAll();
 
     // Statistiques des postes
@@ -122,6 +95,7 @@ try {
             </button>
             <ul class="dropdown-menu" aria-labelledby="exportDropdown">
                 <li><a class="dropdown-item" href="../../includes/export.php?source=poste&type=csv"><i class="fas fa-file-csv mr-2"></i>CSV</a></li>
+                <li><a class="dropdown-item" href="../../includes/export.php?source=poste&type=xlsx"><i class="fas fa-file-excel mr-2"></i>XLSX</a></li>
                 <li><a class="dropdown-item" href="../../includes/export.php?source=poste&type=pdf_paysage"><i class="fas fa-file-pdf mr-2"></i>Page courante en PDF paysage</a></li>
                 <li><a class="dropdown-item" href="../../includes/export.php?source=poste&type=pdf_portrait"><i class="fas fa-file-pdf mr-2"></i>Page courante en PDF portrait</a></li>
             </ul>

@@ -1,0 +1,9 @@
+Array
+(
+    [type] => Projecteur
+    [modele] => EB-1485Fi
+    [numero_serie] => EPSON-2024-001
+    [nom_marque] => Epson
+    [nom_salle] => Bureau BBA
+    [etat] => Operationnel
+)

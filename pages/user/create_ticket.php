@@ -4,16 +4,16 @@ require_once '../../includes/functions.php';
 // Configurer et démarrer la session avant toute sortie
 configureSession();
 
-// Vérifier si l'utilisateur est connecté
-if (!estConnecte()) {
-    // Redirection explicite avec un message d'erreur
-    header('Location: ../../index.php?erreur=Vous devez être connecté');
-    exit();
-}
+// // Vérifier si l'utilisateur est connecté -- COMMENTÉ POUR ACCÈS PUBLIC
+// if (!estConnecte()) {
+//     // Redirection explicite avec un message d'erreur
+//     header('Location: ../../index.php?erreur=Vous devez être connecté');
+//     exit();
+// }
 
-// Vérifier si l'utilisateur a le rôle approprié (tous les rôles peuvent accéder à cette page)
-// Mais on peut ajouter une note spécifique pour les utilisateurs standard
-$estUtilisateurStandard = ($_SESSION['user_role'] != 1 && $_SESSION['user_role'] != 2);
+// // Vérifier si l'utilisateur a le rôle approprié (tous les rôles peuvent accéder à cette page)
+// // Mais on peut ajouter une note spécifique pour les utilisateurs standard
+// $estUtilisateurStandard = (isset($_SESSION['user_role']) && $_SESSION['user_role'] != 1 && $_SESSION['user_role'] != 2); // Vérifier si la session existe
 
 $pdo = connectDB();
 
@@ -76,19 +76,20 @@ if ($selectedSalle) {
 }
 
 // Utiliser la fonction afficherHeader avec le bon niveau de profondeur
-afficherHeader('Créer un ticket', 2);
+afficherHeader('Créer un ticket', 2); // Le niveau 2 peut rester si le header/footer s'adapte
 ?>
-<form method="POST" action="../../includes/ticket_insertt.php" class="needs-validation" novalidate></form>
+<!-- La première balise form vide est inutile, supprimez-la ou commentez-la -->
+<!-- <form method="POST" action="../../includes/ticket_insertt.php" class="needs-validation" novalidate></form> -->
 <div class="container">
     <h1 class="mb-4">Créer un nouveau ticket</h1>
-    
-    <?php afficherMessage(); ?>
-    
+
+    <?php afficherMessage(); // Afficher les messages d'erreur/succès venant de ticket_insertt.php ?>
+
     <!-- Formulaire de filtrage -->
     <form method="POST" id="filtreForm">
         <input type="hidden" name="filtre" value="1">
-        
-        <div class="form-group">
+
+        <div class="form-group mb-3"> <!-- Ajout de marge -->
             <label for="id_salle">Salle :</label>
             <select name="id_salle" id="id_salle" class="form-control" onchange="this.form.submit()">
                 <option value="">Sélectionner une salle</option>
@@ -100,7 +101,7 @@ afficherHeader('Créer un ticket', 2);
             </select>
         </div>
 
-        <div class="form-group">
+        <div class="form-group mb-3"> <!-- Ajout de marge -->
             <label for="id_poste">Poste :</label>
             <select name="id_poste" id="id_poste" class="form-control" <?= !$selectedSalle ? 'disabled' : '' ?> onchange="this.form.submit()">
                 <option value="">Sélectionner un poste</option>
@@ -114,13 +115,20 @@ afficherHeader('Créer un ticket', 2);
     </form>
 
     <!-- Formulaire principal de création de ticket -->
-    <form method="POST" action="../../includes/ticket_insertt.php" class="needs-validation" novalidate>
+    <form method="POST" action="../../includes/ticket_insertt.php" class="needs-validation mt-4" novalidate> <!-- Ajout de marge -->
         <!-- Ajouter les champs cachés pour les sélections existantes -->
-        <input type="hidden" name="id_salle" value="<?= $selectedSalle ?>">
-        <input type="hidden" name="id_poste" value="<?= $selectedPoste ?>">
-        
-        <div class="form-group">
-            <label for="id_appareil">Appareil :</label>
+        <input type="hidden" name="id_salle" value="<?= htmlspecialchars($selectedSalle ?? '') ?>">
+        <input type="hidden" name="id_poste" value="<?= htmlspecialchars($selectedPoste ?? '') ?>">
+
+        <div class="form-group mb-3"> <!-- Ajout de marge -->
+            <label for="code_utilisateur">Votre Code Utilisateur : <span class="text-danger">*</span></label>
+            <input type="text" name="code_utilisateur" id="code_utilisateur" class="form-control" required maxlength="6" pattern=".{6,6}" title="Entrez votre code utilisateur à 6 caractères">
+            <div class="invalid-feedback">Veuillez entrer votre code utilisateur (6 caractères).</div>
+            <small class="form-text text-muted">Ce code vous a été fourni par l'administrateur.</small>
+        </div>
+
+        <div class="form-group mb-3"> <!-- Ajout de marge -->
+            <label for="id_appareil">Appareil (si non lié à un poste) :</label>
             <select name="id_appareil" id="id_appareil" class="form-control" <?= (!$selectedSalle || $selectedPoste) ? 'disabled' : '' ?>>
                 <option value="">Sélectionner un appareil</option>
                 <?php if (!empty($appareils) && !$selectedPoste): ?>
@@ -132,10 +140,11 @@ afficherHeader('Créer un ticket', 2);
                     <?php endforeach; ?>
                 <?php endif; ?>
             </select>
+             <small class="form-text text-muted">Sélectionnez si le problème concerne un appareil non assigné à un poste spécifique dans cette salle.</small>
         </div>
 
-        <div class="form-group">
-            <label for="id_peripherique">Périphérique :</label>
+        <div class="form-group mb-3"> <!-- Ajout de marge -->
+            <label for="id_peripherique">Périphérique (si lié à un poste) :</label>
             <select name="id_peripherique" id="id_peripherique" class="form-control" <?= !$selectedPoste ? 'disabled' : '' ?>>
                 <option value="">Sélectionner un périphérique</option>
                 <?php if ($selectedPoste): ?>
@@ -146,10 +155,11 @@ afficherHeader('Créer un ticket', 2);
                     <?php endforeach; ?>
                 <?php endif; ?>
             </select>
+             <small class="form-text text-muted">Sélectionnez si le problème concerne un périphérique spécifique du poste choisi.</small>
         </div>
 
-        <div class="form-group">
-            <label for="id_unite">Unité :</label>
+        <div class="form-group mb-3"> <!-- Ajout de marge -->
+            <label for="id_unite">Unité Centrale (si lié à un poste) :</label>
             <select name="id_unite" id="id_unite" class="form-control" <?= !$selectedPoste ? 'disabled' : '' ?>>
                 <option value="">Sélectionner une unité</option>
                 <?php if ($selectedPoste): ?>
@@ -161,16 +171,22 @@ afficherHeader('Créer un ticket', 2);
                     <?php endforeach; ?>
                 <?php endif; ?>
             </select>
+             <small class="form-text text-muted">Sélectionnez si le problème concerne l'unité centrale spécifique du poste choisi.</small>
         </div>
 
-        <div class="form-group">
-            <label for="description">Description du problème :</label>
+         <div class="alert alert-info" role="alert">
+            Veuillez sélectionner soit un Appareil (si non lié à un poste), soit un Périphérique ou une Unité Centrale (si lié au poste sélectionné). Un seul choix est nécessaire pour identifier l'équipement concerné.
+        </div>
+
+
+        <div class="form-group mb-3"> <!-- Ajout de marge -->
+            <label for="description">Description du problème : <span class="text-danger">*</span></label>
             <textarea name="description" id="description" class="form-control" rows="4" required></textarea>
             <div class="invalid-feedback">Veuillez décrire le problème</div>
         </div>
 
-        <div class="form-group">
-            <label for="categorie">Catégorie :</label>
+        <div class="form-group mb-3"> <!-- Ajout de marge -->
+            <label for="categorie">Catégorie : <span class="text-danger">*</span></label>
             <select name="categorie" id="categorie" class="form-control" required>
                 <option value="">Sélectionner une catégorie</option>
                 <option value="Matériel">Matériel</option>
@@ -183,10 +199,37 @@ afficherHeader('Créer un ticket', 2);
 
         <div class="form-group">
             <button type="submit" class="btn btn-primary">Créer le ticket</button>
-            <a href="../common/views_all.php" class="btn btn-secondary">Annuler</a>
+            <!-- Le bouton annuler peut rediriger vers une page publique ou être supprimé -->
+            <!-- <a href="../common/views_all.php" class="btn btn-secondary">Annuler</a> -->
         </div>
     </form>
 </div>
+
+<?php
+// Ajouter le script pour la validation Bootstrap si ce n'est pas déjà global
+?>
+<script>
+// Example starter JavaScript for disabling form submissions if there are invalid fields
+(function () {
+  'use strict'
+
+  // Fetch all the forms we want to apply custom Bootstrap validation styles to
+  var forms = document.querySelectorAll('.needs-validation')
+
+  // Loop over them and prevent submission
+  Array.prototype.slice.call(forms)
+    .forEach(function (form) {
+      form.addEventListener('submit', function (event) {
+        if (!form.checkValidity()) {
+          event.preventDefault()
+          event.stopPropagation()
+        }
+
+        form.classList.add('was-validated')
+      }, false)
+    })
+})()
+</script>
 
 <?php
 afficherFooter();

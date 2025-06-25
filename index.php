@@ -22,14 +22,16 @@ if (estConnecte()) {
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $email = $_POST['email'];
     $password = $_POST['password'];
-    
+  
     try {
         $pdo = connectDB();
-        $stmt = $pdo->prepare("SELECT * FROM users WHERE email = :email AND password = :password");
-        $stmt->execute(['email' => $email, 'password' => $password]);
+        // 1. Récupérer l'utilisateur par email uniquement
+        $stmt = $pdo->prepare("SELECT * FROM users WHERE email = :email");
+        $stmt->execute(['email' => $email]);
         $user = $stmt->fetch();
 
-        if ($user) {
+        // 2. Vérifier si l'utilisateur existe ET si le mot de passe correspond au hachage
+        if ($user && password_verify($password, $user['password'])) {
             // Régénération de l'ID de session pour prévenir les attaques de fixation de session
             session_regenerate_id(true);
             
@@ -294,4 +296,4 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 </div>
 
 </body>
-</html> 
+</html>

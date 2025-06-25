@@ -124,7 +124,7 @@ function afficherHeader($titre, $niveau = 1, $afficher_sidebar = true) {
     }
     
     // Navbar horizontale avec les informations utilisateur - affichée sur toutes les pages
-    echo '<nav class="navbar navbar-expand-lg navbar-dark bg-primary mb-4 fixed-top" style="right: 250px; margin-right: -251px;">';
+    echo '<nav class="navbar navbar-expand-lg navbar-dark bg-primary mb-4" style="position: relative;">';
     echo '<div class="container d-flex justify-content-between align-items-center">';
     
     // Logo ou titre pour la navbar horizontale
@@ -159,9 +159,9 @@ function afficherHeader($titre, $niveau = 1, $afficher_sidebar = true) {
     // Contenu principal avec marge supérieure pour compenser la navbar fixe
     // Ajuster la classe du conteneur en fonction de la présence de la sidebar
     if ($afficher_sidebar) {
-        echo '<div class="container" style="margin-top: 35px;">';
+        echo '<div class="container" style="margin-top: 20px;">';
     } else {
-        echo '<div class="container-fluid" style="margin-top: 35px;">';
+        echo '<div class="container-fluid" style="margin-top: 20px;">';
     }
 }
 
@@ -200,20 +200,34 @@ function afficherFooter() {
     echo '</html>'; // Fermeture de la balise HTML
 }
 
-// Fonction pour afficher les messages système
+// Fonction pour afficher les messages système (MODIFIÉE pour utiliser la session)
 function afficherMessage() {
-    if(isset($_GET['succes'])) { // Vérifie la présence d'un message de succès
-        echo '<div class="alert alert-success alert-dismissible fade show" role="alert">';
-        echo htmlspecialchars($_GET['succes']);
-        echo '<button type="button" class="close" data-dismiss="alert" aria-label="Fermer"><span aria-hidden="true">&times;</span></button>';
-        echo '</div>';
+    // Assurer que la session est active
+    if (session_status() == PHP_SESSION_NONE) {
+        // Il est préférable que configureSession() ait déjà démarré la session
+        session_start();
     }
-    if(isset($_GET['erreur'])) { // Vérifie la présence d'un message d'erreur
-        echo '<div class="alert alert-danger alert-dismissible fade show" role="alert">';
-        echo 'Erreur : ' . htmlspecialchars($_GET['erreur']);
-        echo '<button type="button" class="close" data-dismiss="alert" aria-label="Fermer"><span aria-hidden="true">&times;</span></button>';
+
+    // Vérifier si un message est stocké dans la session
+    if (isset($_SESSION['message'])) {
+        $message = $_SESSION['message'];
+        // Utiliser htmlspecialchars pour la sécurité
+        $messageText = htmlspecialchars($message['text'], ENT_QUOTES, 'UTF-8');
+        $messageType = htmlspecialchars($message['type'], ENT_QUOTES, 'UTF-8'); // ex: 'success', 'danger'
+
+        // Afficher l'alerte Bootstrap 5 (avec bouton de fermeture)
+        echo '<div class="alert alert-' . $messageType . ' alert-dismissible fade show" role="alert">';
+        echo $messageText;
+        // Utilisation de la classe btn-close de Bootstrap 5
+        echo '<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>';
         echo '</div>';
+
+        // Supprimer le message de la session après l'affichage
+        unset($_SESSION['message']);
     }
+    // Optionnel : Gérer aussi les messages passés par GET pour la compatibilité descendante ?
+    // else if(isset($_GET['succes'])) { ... }
+    // else if(isset($_GET['erreur'])) { ... }
 }
 
 // Fonction pour afficher le formulaire d'appareil
@@ -543,4 +557,22 @@ function restaurerUnite($id_archive) {
         throw $e;
     }
 }
+
+/**
+ * Sets a message in the session to be displayed on the next request.
+ *
+ * @param string $message The message text.
+ * @param string $type The message type (e.g., 'success', 'danger', 'info', 'warning'). Defaults to 'info'.
+ */
+function setMessage($message, $type = 'info') {
+    // Ensure session is active before using session variables
+    if (session_status() == PHP_SESSION_NONE) {
+        session_start();
+    }
+    $_SESSION['message'] = [
+        'text' => $message,
+        'type' => $type
+    ];
+}
+
 ?> <!-- Fin du script PHP -->
