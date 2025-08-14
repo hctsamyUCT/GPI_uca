@@ -139,7 +139,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $pdo->beginTransaction();
             
             // Récupérer les informations de l'appareil avant suppression
-            $stmt = $pdo->prepare("SELECT a.type, a.modele, a.numero_serie, a.etat, m.nom_marque 
+            $stmt = $pdo->prepare("SELECT a.type, a.modele, a.numero_inventaire, a.etat, m.nom_marque 
                                   FROM appareils a 
                                   JOIN marque m ON a.id_marque = m.id_marque 
                                   WHERE a.id_appareil = ?");
@@ -150,7 +150,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $description = "Suppression de l'appareil concerné par ce ticket";
             $action = "Appareil supprimé: " . $appareil_info['type'] . " - " . $appareil_info['modele'] . 
                       "\nMarque: " . $appareil_info['nom_marque'] . 
-                      "\nNuméro de série: " . $appareil_info['numero_serie'] . 
+                      "\nNuméro d'inventaire: " . $appareil_info['numero_inventaire'] . 
                       "\nÉtat: " . $appareil_info['etat'];
             
             $stmt = $pdo->prepare("INSERT INTO interventions (id_ticket, id_user, description, action_effectuee) VALUES (?, ?, ?, ?)");

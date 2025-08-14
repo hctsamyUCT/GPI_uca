@@ -70,10 +70,7 @@ try { // Début du bloc de gestion d'erreurs
 
                 /* VALIDATION DES CHAMPS
                 */
-                $required = ['type', 'modele', 'numero_serie', 'etat', 'id_marque'];
-                // Liste des champs obligatoires :
-                // - Doit correspondre aux name des inputs
-
+                $required = ['type', 'modele', 'etat', 'id_marque'];
                 foreach ($required as $field) {
                     if (empty($_POST[$field])) {
                         header('Location: ../pages/common/gestion_appareil.php?erreur=Champs manquants');
@@ -81,62 +78,67 @@ try { // Début du bloc de gestion d'erreurs
                     }
                 }
 
-                /* VÉRIFICATION NUMÉRO DE SÉRIE UNIQUE
-                */
-                $check = $pdo->prepare("SELECT id_appareil FROM appareils WHERE numero_serie = ?");
-                // Requête préparée :
-                // - Protection contre les injections SQL
-                // - ? = paramètre à binder
+                // Génération automatique du numéro d'inventaire
+                $type = $_POST['type'];
+                $annee = date('Y');
+                $prefix = ($type === 'Imprimante') ? 'IMP' : 'PRJ';
+                // Chercher le dernier numéro séquentiel pour ce type et cette année
+                $stmt = $pdo->prepare("SELECT numero_inventaire FROM appareils WHERE type = ? AND numero_inventaire LIKE ? ORDER BY id_appareil DESC LIMIT 1");
+                $like = $prefix . '/%/' . $annee;
+                $stmt->execute([$type, $like]);
+                $last = $stmt->fetchColumn();
+                if ($last) {
+                    // Extraire le NNN
+                    $parts = explode('/', $last);
+                    $num = isset($parts[1]) ? intval($parts[1]) : 0;
+                    $nextNum = str_pad($num + 1, 3, '0', STR_PAD_LEFT);
+                } else {
+                    $nextNum = '001';
+                }
+                $numero_inventaire = $prefix . '/' . $nextNum . '/' . $annee;
 
-                $check->execute([$_POST['numero_serie']]);
-                // Exécution avec la valeur POST :
-                // - Tableau de paramètres (ici un seul)
-
-                if ($check->fetch()) { // Si un résultat est trouvé
-                    header('Location: ../pages/common/gestion_appareil.php?erreur=Numéro de série existant');
+                // Vérification unicité
+                $check = $pdo->prepare("SELECT id_appareil FROM appareils WHERE numero_inventaire = ?");
+                $check->execute([$numero_inventaire]);
+                if ($check->fetch()) {
+                    header('Location: ../pages/common/gestion_appareil.php?erreur=Conflit sur le numéro d\'inventaire généré, réessayez.');
                     exit;
                 }
 
-                /* VÉRIFICATION MARQUE EXISTANTE
-                */
+                // Vérification marque existante
                 $checkMarque = $pdo->prepare("SELECT id_marque FROM marque WHERE id_marque = ?");
                 $checkMarque->execute([$_POST['id_marque']]);
-                if (!$checkMarque->fetch()) { // Si aucune marque trouvée
+                if (!$checkMarque->fetch()) {
                     header('Location: ../pages/common/gestion_appareil.php?erreur=Marque invalide');
                     exit;
                 }
 
-                /* VÉRIFICATION SALLE (SI RENSEIGNÉE)
-                */
-                if (!empty($_POST['id_salle'])) { // Si champ rempli
+                // Vérification salle (si renseignée)
+                if (!empty($_POST['id_salle'])) {
                     $checkSalle = $pdo->prepare("SELECT id_salle FROM salles WHERE id_salle = ?");
                     $checkSalle->execute([$_POST['id_salle']]);
-                    if (!$checkSalle->fetch()) { // Si salle inexistante
+                    if (!$checkSalle->fetch()) {
                         header('Location: ../pages/common/gestion_appareil.php?erreur=Salle invalide');
                         exit;
                     }
                 }
 
-                /* INSERTION EN BASE
-                */
+                // Insertion en base
                 $stmt = $pdo->prepare("INSERT INTO appareils
-                    (type, modele, numero_serie, etat, id_marque, id_salle)
+                    (type, modele, numero_inventaire, etat, id_marque, id_salle)
                     VALUES (?, ?, ?, ?, ?, ?)");
-                // Requête SQL avec 6 paramètres :
-                // - Structure de la table : colonnes cibles
-                // - Protection contre les injections SQL
-
-                $stmt->execute([ // Liaison des paramètres
-                    $_POST['type'], // Valeur 1
-                    $_POST['modele'], // Valeur 2
-                    $_POST['numero_serie'], // Valeur 3
-                    $_POST['etat'], // Valeur 4
-                    $_POST['id_marque'], // Valeur 5
-                    ($_POST['id_salle'] !== '') ? $_POST['id_salle'] : null // Valeur 6 conditionnelle
+                $stmt->execute([
+                    $_POST['type'],
+                    $_POST['modele'],
+                    $numero_inventaire,
+                    $_POST['etat'],
+                    $_POST['id_marque'],
+                    ($_POST['id_salle'] !== '') ? $_POST['id_salle'] : null
                 ]);
-                // Conversion de chaîne vide en null pour id_salle
 
-                header('Location: ../pages/common/gestion_appareil.php?succes=1'); // Redirection succès
+                // Message de succès avec le numéro généré
+                $_SESSION['info'] = "Appareil ajouté avec succès. Numéro d'inventaire généré : <strong>" . htmlspecialchars($numero_inventaire) . "</strong>";
+                header('Location: ../pages/common/gestion_appareil.php?succes=1');
                 exit;
             }
 
@@ -176,7 +178,7 @@ try { // Début du bloc de gestion d'erreurs
                 $stmt = $pdo->prepare("UPDATE appareils SET
                     type = ?,
                     modele = ?,
-                    numero_serie = ?,
+                    numero_inventaire = ?,
                     etat = ?,
                     id_marque = ?,
                     id_salle = ?
@@ -184,7 +186,7 @@ try { // Début du bloc de gestion d'erreurs
                 $stmt->execute([
                     $_POST['type'],
                     $_POST['modele'],
-                    $_POST['numero_serie'],
+                    $_POST['numero_inventaire'],
                     $_POST['etat'],
                     $_POST['id_marque'],
                     ($_POST['id_salle'] !== '') ? $_POST['id_salle'] : null,
@@ -269,7 +271,7 @@ try { // Début du bloc de gestion d'erreurs
         case 'ajouter_unite':
             if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 // Validation des champs requis
-                $required = ['numero_inventaire', 'ram', 'processeur', 'disque_dur_1_type', 'disque_dur_1_capacite'];
+                $required = ['ram', 'processeur', 'disque_dur_1_type', 'disque_dur_1_capacite'];
                 foreach ($required as $field) {
                     if (empty($_POST[$field])) {
                         header('Location: ../pages/common/Gestion_unit.php?erreur=Tous les champs obligatoires doivent être remplis');
@@ -277,11 +279,28 @@ try { // Début du bloc de gestion d'erreurs
                     }
                 }
 
+                // Génération automatique du numéro d'inventaire pour unité centrale
+                $annee = !empty($_POST['date_achat']) ? date('Y', strtotime($_POST['date_achat'])) : date('Y');
+                $prefix = 'UNT';
+                // Chercher le dernier numéro séquentiel pour cette année
+                $stmt = $pdo->prepare("SELECT numero_inventaire FROM unite WHERE numero_inventaire LIKE ? ORDER BY id_unite DESC LIMIT 1");
+                $like = $prefix . '/%/' . $annee;
+                $stmt->execute([$like]);
+                $last = $stmt->fetchColumn();
+                if ($last) {
+                    $parts = explode('/', $last);
+                    $num = isset($parts[1]) ? intval($parts[1]) : 0;
+                    $nextNum = str_pad($num + 1, 3, '0', STR_PAD_LEFT);
+                } else {
+                    $nextNum = '001';
+                }
+                $numero_inventaire = $prefix . '/' . $nextNum . '/' . $annee;
+
                 // Vérification du numéro d'inventaire unique
                 $check = $pdo->prepare("SELECT id_unite FROM unite WHERE numero_inventaire = ?");
-                $check->execute([$_POST['numero_inventaire']]);
+                $check->execute([$numero_inventaire]);
                 if ($check->fetch()) {
-                    header('Location: ../pages/common/Gestion_unit.php?erreur=Ce numéro d\'inventaire existe déjà');
+                    header('Location: ../pages/common/Gestion_unit.php?erreur=Conflit sur le numéro d\'inventaire généré, réessayez.');
                     exit;
                 }
 
@@ -293,7 +312,7 @@ try { // Début du bloc de gestion d'erreurs
                 ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)");
 
                 $stmt->execute([
-                    $_POST['numero_inventaire'],
+                    $numero_inventaire,
                     $_POST['ram'],
                     $_POST['processeur'],
                     $_POST['disque_dur_1_type'],
@@ -318,6 +337,7 @@ try { // Début du bloc de gestion d'erreurs
                     }
                 }
 
+                $_SESSION['info'] = "Unité ajoutée avec succès. Numéro d'inventaire généré : <strong>" . htmlspecialchars($numero_inventaire) . "</strong>";
                 header('Location: ../pages/common/Gestion_unit.php?succes=1');
                 exit;
             }
@@ -328,12 +348,6 @@ try { // Début du bloc de gestion d'erreurs
             <div class="card">
                 <div class="card-body">
                     <form method="POST" action="gestion.php?action=ajouter_unite" class="needs-validation" novalidate>
-                        <div class="form-group">
-                            <label for="numero_inventaire">Numéro d'inventaire :</label>
-                            <input type="text" class="form-control" id="numero_inventaire" name="numero_inventaire" required>
-                            <div class="invalid-feedback">Veuillez entrer un numéro d'inventaire</div>
-                        </div>
-                        
                         <div class="form-group">
                             <label for="ram">RAM :</label>
                             <select class="form-control" id="ram" name="ram" required>
@@ -469,7 +483,7 @@ try { // Début du bloc de gestion d'erreurs
 
             if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 // Validation des champs requis
-                $required = ['numero_inventaire', 'ram', 'processeur', 'disque_dur_1_type', 'disque_dur_1_capacite'];
+                $required = ['ram', 'processeur', 'disque_dur_1_type', 'disque_dur_1_capacite'];
                 foreach ($required as $field) {
                     if (empty($_POST[$field])) {
                         header('Location: ../pages/common/Gestion_unit.php?erreur=Tous les champs obligatoires doivent être remplis');
@@ -486,7 +500,6 @@ try { // Début du bloc de gestion d'erreurs
                 }
 
                 $stmt = $pdo->prepare("UPDATE unite SET 
-                    numero_inventaire = ?,
                     ram = ?,
                     processeur = ?,
                     disque_dur_1_type = ?,
@@ -498,7 +511,6 @@ try { // Début du bloc de gestion d'erreurs
                     WHERE id_unite = ?");
 
                 $stmt->execute([
-                    $_POST['numero_inventaire'],
                     $_POST['ram'],
                     $_POST['processeur'],
                     $_POST['disque_dur_1_type'],
@@ -537,12 +549,6 @@ try { // Début du bloc de gestion d'erreurs
             <div class="card">
                 <div class="card-body">
                     <form method="POST" action="gestion.php?action=modifier_unite&id=<?= $unite['id_unite'] ?>" class="needs-validation" novalidate>
-                        <div class="form-group">
-                            <label for="numero_inventaire">Numéro d'inventaire :</label>
-                            <input type="text" class="form-control" id="numero_inventaire" name="numero_inventaire" value="<?= htmlspecialchars($unite['numero_inventaire']) ?>" required>
-                            <div class="invalid-feedback">Veuillez entrer un numéro d'inventaire</div>
-                        </div>
-                        
                         <div class="form-group">
                             <label for="ram">RAM :</label>
                             <select class="form-control" id="ram" name="ram" required>
@@ -638,7 +644,7 @@ try { // Début du bloc de gestion d'erreurs
                                 $postes->execute([]); // Pas de paramètre à passer ici pour l'ajout
                                 while ($poste = $postes->fetch()) {
                                 ?>
-                                <option value="<?= $poste['id_poste'] ?>">
+                                <option value="<?= $poste['id_poste'] ?>" <?= $poste['id_poste'] == $unite['id_poste'] ? 'selected' : '' ?>>
                                     <?= htmlspecialchars($poste['nom_poste'] . ' - ' . $poste['nom_salle']) ?>
                                 </option>
                                 <?php } ?>
@@ -672,7 +678,7 @@ try { // Début du bloc de gestion d'erreurs
         case 'ajouter_peripherique':
             if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 // Validation des champs requis
-                $required = ['type', 'id_marque', 'numero_inventaire'];
+                $required = ['type', 'id_marque'];
                 foreach ($required as $field) {
                     if (empty($_POST[$field])) {
                         header('Location: ../pages/common/Gestion_peripherique.php?erreur=Champs obligatoires manquants');
@@ -680,20 +686,54 @@ try { // Début du bloc de gestion d'erreurs
                     }
                 }
 
+                // Détermination du préfixe selon le type
+                $type = $_POST['type'];
+                $annee = date('Y');
+                switch (strtolower($type)) {
+                    case 'écran':
+                    case 'ecran':
+                        $prefix = 'ECR';
+                        break;
+                    case 'souris':
+                        $prefix = 'SRI';
+                        break;
+                    case 'clavier':
+                        $prefix = 'CLA';
+                        break;
+                    default:
+                        header('Location: ../pages/common/Gestion_peripherique.php?erreur=Type de périphérique inconnu');
+                        exit;
+                }
+                // Année d'acquisition (si on veut la prendre depuis une date, il faut ajouter le champ au formulaire)
+                // Ici, on prend l'année courante
+                // Chercher le dernier numéro séquentiel pour ce type et cette année
+                $stmt = $pdo->prepare("SELECT numero_inventaire FROM peripherique WHERE type = ? AND numero_inventaire LIKE ? ORDER BY id_peripherique DESC LIMIT 1");
+                $like = $prefix . '/%/' . $annee;
+                $stmt->execute([$type, $like]);
+                $last = $stmt->fetchColumn();
+                if ($last) {
+                    $parts = explode('/', $last);
+                    $num = isset($parts[1]) ? intval($parts[1]) : 0;
+                    $nextNum = str_pad($num + 1, 3, '0', STR_PAD_LEFT);
+                } else {
+                    $nextNum = '001';
+                }
+                $numero_inventaire = $prefix . '/' . $nextNum . '/' . $annee;
+
                 // Vérification numéro inventaire unique
                 $check = $pdo->prepare("SELECT id_peripherique FROM peripherique WHERE numero_inventaire = ?");
-                $check->execute([$_POST['numero_inventaire']]);
+                $check->execute([$numero_inventaire]);
                 if ($check->fetch()) {
-                    header('Location: ../pages/common/Gestion_peripherique.php?erreur=Ce numéro d\'inventaire existe déjà');
+                    header('Location: ../pages/common/Gestion_peripherique.php?erreur=Conflit sur le numéro d\'inventaire généré, réessayez.');
                     exit;
                 }
 
                 // Insertion du périphérique
                 $stmt = $pdo->prepare("INSERT INTO peripherique (type, id_marque, numero_inventaire, etat) VALUES (?, ?, ?, ?)");
                 $stmt->execute([
-                    $_POST['type'],
+                    $type,
                     $_POST['id_marque'],
-                    $_POST['numero_inventaire'],
+                    $numero_inventaire,
                     $_POST['etat'] ?? 'Operationnel'
                 ]);
 
@@ -704,6 +744,7 @@ try { // Début du bloc de gestion d'erreurs
                     $stmt->execute([$_POST['id_poste'], $id_peripherique]);
                 }
 
+                $_SESSION['info'] = "Périphérique ajouté avec succès. Numéro d'inventaire généré : <strong>" . htmlspecialchars($numero_inventaire) . "</strong>";
                 header('Location: ../pages/common/Gestion_peripherique.php?succes=1');
                 exit;
             }
@@ -738,11 +779,6 @@ try { // Début du bloc de gestion d'erreurs
                                     }
                                     ?>
                                 </select>
-                            </div>
-
-                            <div class="form-group">
-                                <label for="numero_inventaire">Numéro d'inventaire :</label>
-                                <input type="text" class="form-control" id="numero_inventaire" name="numero_inventaire" required>
                             </div>
 
                             <div class="form-group">
@@ -803,7 +839,7 @@ try { // Début du bloc de gestion d'erreurs
 
             if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 // Validation
-                $required = ['type', 'id_marque', 'numero_inventaire'];
+                $required = ['type', 'id_marque'];
                 foreach ($required as $field) {
                     if (empty($_POST[$field])) {
                         header("Location: ../pages/common/Gestion_peripherique.php?erreur=Champs obligatoires manquants&id=$id");
@@ -876,12 +912,6 @@ try { // Début du bloc de gestion d'erreurs
                                 }
                                 ?>
                             </select>
-                        </div>
-
-                        <div class="form-group">
-                            <label>Numéro d'inventaire :</label>
-                            <input type="text" class="form-control" name="numero_inventaire" 
-                                   value="<?= htmlspecialchars($periph['numero_inventaire']) ?>" required>
                         </div>
 
                         <div class="form-group">
@@ -973,7 +1003,12 @@ try { // Début du bloc de gestion d'erreurs
 
             // Affichage formulaire
             $salles = $pdo->query("SELECT * FROM salles ORDER BY nom_salle")->fetchAll();
-            $peripheriques = $pdo->query("SELECT * FROM peripherique WHERE supprime_le IS NULL")->fetchAll();
+            $peripheriques = $pdo->query("
+                SELECT p.* 
+                FROM peripherique p
+                LEFT JOIN poste_peripherique pp ON p.id_peripherique = pp.id_peripherique
+                WHERE p.supprime_le IS NULL AND pp.id_poste IS NULL
+            ")->fetchAll();
             $unites = $pdo->query("SELECT * FROM unite WHERE supprime_le IS NULL")->fetchAll();
 
             afficherHeader('Ajouter un poste');
@@ -1095,11 +1130,10 @@ try { // Début du bloc de gestion d'erreurs
             $salles = $pdo->query("SELECT * FROM salles ORDER BY nom_salle")->fetchAll();
             $peripheriques = $pdo->query("
                 SELECT p.* 
-                FROM peripherique p 
-                LEFT JOIN poste_peripherique pp ON p.id_peripherique = pp.id_peripherique 
-                WHERE p.supprime_le IS NULL 
-                AND (pp.id_poste IS NULL OR pp.id_poste = $id)
-                ORDER BY p.type")->fetchAll();
+                FROM peripherique p
+                LEFT JOIN poste_peripherique pp ON p.id_peripherique = pp.id_peripherique
+                WHERE p.supprime_le IS NULL AND pp.id_poste IS NULL
+            ")->fetchAll();
             $unites = $pdo->query("
                 SELECT u.* 
                 FROM unite u 
@@ -1186,33 +1220,30 @@ try { // Début du bloc de gestion d'erreurs
 
         case 'restaurer_appareil':
             try {
-                restaurerAppareil($_GET['id']);
+                restaurerAppareil($_GET['id_archive']);
                 header('Location: ../pages/common/gestion_appareil.php?succes=1');
             } catch (Exception $e) {
                 header('Location: ../pages/archives/archives_appareil.php?erreur=' . urlencode($e->getMessage()));
             }
             exit;
-            break;
 
         case 'restaurer_peripherique':
             try {
-                restaurerPeripherique($_GET['id']);
+                restaurerPeripherique($_GET['id_archive']);
                 header('Location: ../pages/common/gestion_peripherique.php?succes=1');
             } catch (Exception $e) {
                 header('Location: ../pages/archives/archives_peripherique.php?erreur=' . urlencode($e->getMessage()));
             }
             exit;
-            break;
 
         case 'restaurer_unite':
             try {
-                restaurerUnite($_GET['id']);
+                restaurerUnite($_GET['id_archive']);
                 header('Location: ../pages/common/Gestion_unit.php?succes=1');
             } catch (Exception $e) {
                 header('Location: ../pages/archives/archives_unite.php?erreur=' . urlencode($e->getMessage()));
             }
             exit;
-            break;
 
         /* CAS PAR DÉFAUT
         */

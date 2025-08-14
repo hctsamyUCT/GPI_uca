@@ -11,12 +11,17 @@ function getFilterForm($type, $filters = []) {
     // Filtres communs
     $html .= '<div class="col-md-3 mb-3">
         <label>État</label>
-        <select name="etat" class="form-control">
-            <option value="">Tous</option>
-            <option value="opérationnel" ' . (isset($filters['etat']) && $filters['etat'] == 'opérationnel' ? 'selected' : '') . '>Opérationnel</option>
-            <option value="en_panne" ' . (isset($filters['etat']) && $filters['etat'] == 'en_panne' ? 'selected' : '') . '>En panne</option>
-        </select>
-    </div>';
+        <select name="etat" class="form-control">';
+    if ($type === 'poste') {
+        $html .= '<option value="">Tous</option>';
+        $html .= '<option value="opérationnel" ' . (isset($filters['etat']) && $filters['etat'] == 'opérationnel' ? 'selected' : '') . '>Opérationnel</option>';
+        $html .= '<option value="en_panne" ' . (isset($filters['etat']) && $filters['etat'] == 'en_panne' ? 'selected' : '') . '>En panne</option>';
+    } else {
+        $html .= '<option value="">Tous</option>';
+        $html .= '<option value="Operationnel" ' . (isset($filters['etat']) && $filters['etat'] == 'Operationnel' ? 'selected' : '') . '>Opérationnel</option>';
+        $html .= '<option value="En panne" ' . (isset($filters['etat']) && $filters['etat'] == 'En panne' ? 'selected' : '') . '>En panne</option>';
+    }
+    $html .= '</select></div>';
 
     // Filtres spécifiques selon le type
     switch($type) {

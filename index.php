@@ -265,9 +265,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <div class="card login-card">
             <div class="card-header text-center">
                 <div class="logo-wrapper mb-2">
-                    <span class="logo-text-large">GPIiii</span> 
+                    <span class="logo-text-large">GPI</span> 
                 </div>
-                <h3 class="login-title">Connexion au Système GPi TEST 1</h3>
+                <h3 class="login-title">Connexion au Système GPI</h3>
             </div>
             <div class="card-body">
                 <?php if (isset($error)): ?>

@@ -106,6 +106,7 @@ function afficherHeader($titre, $niveau = 1, $afficher_sidebar = true) {
             echo '<li><a href="' . $prefix . 'pages/common/views_all.php"><i class="fas fa-th-list"></i>Vue globale sur le stock</a></li>';
             echo '<li><a href="' . $prefix . 'pages/admin/gestion_users.php"><i class="fas fa-user-tag"></i>Gestion des utilisateurs</a></li>';
             echo '<li><a href="' . $prefix . 'pages/admin/statistiques.php"><i class="fas fa-chart-bar"></i>Statistiques</a></li>';
+            echo '<li><a href="' . $prefix . 'pages/tickets_par_salle/selection_page.php"><i class="fas fa-door-open"></i>Sélection salle (tickets)</a></li>';
             echo '</ul>';
             echo '</li>';
         }
@@ -256,7 +257,7 @@ function afficherFormulaire($data = null) {
         $values = $data ?: [
             'type' => 'Imprimante',
             'modele' => '',
-            'numero_serie' => '',
+            'numero_inventaire' => '',
             'etat' => 'Operationnel',
             'id_marque' => '',
             'id_salle' => ''
@@ -280,11 +281,8 @@ function afficherFormulaire($data = null) {
                         <div class="invalid-feedback">Veuillez entrer un modèle</div>
                     </div>
 
-                    <div class="form-group">
-                        <label for="numero_serie">Numéro de série :</label>
-                        <input type="text" class="form-control" id="numero_serie" name="numero_serie" value="<?= htmlspecialchars($values['numero_serie']) ?>" required pattern="[A-Za-z0-9-]+" minlength="3">
-                        <div class="invalid-feedback">Le numéro de série doit contenir au moins 3 caractères (lettres, chiffres et tirets uniquement)</div>
-                    </div>
+                    <!-- Champ masqué pour le numéro d'inventaire -->
+                    <input type="hidden" id="numero_inventaire" name="numero_inventaire" value="<?= htmlspecialchars($values['numero_inventaire']) ?>">
 
                     <div class="form-group">
                         <label for="etat">État :</label>
@@ -430,18 +428,15 @@ function restaurerAppareil($id_archive) {
         }
 
         // 2. Réinsérer dans la table appareils
-        $stmt = $pdo->prepare("
-            INSERT INTO appareils (
-                id_appareil, type, modele, numero_serie, 
-                etat, id_marque, id_salle, date_ajout
-            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?)
-        ");
+        $stmt = $pdo->prepare("INSERT INTO appareils (
+            id_appareil, type, modele, numero_inventaire, etat, id_marque, id_salle, date_ajout
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
         
         $stmt->execute([
             $archive['id_appareil'],
             $archive['type'],
             $archive['modele'],
-            $archive['numero_serie'],
+            $archive['numero_inventaire'],
             $archive['etat'],
             $archive['id_marque'],
             $archive['id_salle'],

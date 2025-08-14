@@ -81,6 +81,11 @@ afficherHeader('Créer un ticket', 2); // Le niveau 2 peut rester si le header/f
 <!-- La première balise form vide est inutile, supprimez-la ou commentez-la -->
 <!-- <form method="POST" action="../../includes/ticket_insertt.php" class="needs-validation" novalidate></form> -->
 <div class="container">
+<?php if (isset($_GET['alerte'])): ?>
+    <div class="alert alert-warning" role="alert">
+        <?= htmlspecialchars($_GET['alerte']) ?>
+    </div>
+<?php endif; ?>
     <h1 class="mb-4">Créer un nouveau ticket</h1>
 
     <?php afficherMessage(); // Afficher les messages d'erreur/succès venant de ticket_insertt.php ?>
@@ -135,7 +140,7 @@ afficherHeader('Créer un ticket', 2); // Le niveau 2 peut rester si le header/f
                     <?php foreach($appareils as $appareil): ?>
                         <option value="<?= $appareil['id_appareil'] ?>" <?= ($_POST['id_appareil'] ?? '') == $appareil['id_appareil'] ? 'selected' : '' ?>>
                             <?= htmlspecialchars($appareil['type'] . ' - ' . $appareil['modele']) ?>
-                            (<?= htmlspecialchars($appareil['numero_serie']) ?>)
+                            (<?= htmlspecialchars($appareil['numero_inventaire']) ?>)
                         </option>
                     <?php endforeach; ?>
                 <?php endif; ?>

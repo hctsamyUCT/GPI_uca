@@ -46,7 +46,7 @@ try { // Début du bloc de gestion d'erreurs
 
     // Traitement de la confirmation de restauration
     if (isset($_POST['restaurer']) && isset($_POST['id_archive'])) {
-        header('Location: ../../includes/gestion.php?action=restaurer_appareil&id=' . $_POST['id_archive']);
+        header('Location: ../../includes/gestion.php?action=restaurer_appareil&id_archive=' . $_POST['id_archive']);
         exit();
     }
 
@@ -94,7 +94,7 @@ try { // Début du bloc de gestion d'erreurs
         echo '<th>ID</th>';
         echo '<th>Type</th>';
         echo '<th>Modèle</th>';
-        echo '<th>N° Série</th>';
+        echo '<th>N° Inventaire</th>';
         echo '<th>État</th>';
         echo '<th>Date d\'archivage</th>';
         echo '<th>Salle</th>';
@@ -118,8 +118,8 @@ try { // Début du bloc de gestion d'erreurs
             // Colonne Modèle :
             // - Chaîne libre (ex: 'MX405')
 
-            echo '<td>' . htmlspecialchars($archive['numero_serie']) . '</td>';
-            // Colonne Numéro de série :
+            echo '<td>' . htmlspecialchars($archive['numero_inventaire']) . '</td>';
+            // Colonne Numéro d'inventaire :
             // - Identifiant unique de l'appareil
 
             echo '<td>';

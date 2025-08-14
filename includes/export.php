@@ -43,11 +43,11 @@ try {
     switch ($source) {
         case 'appareils':
             // Construction de la requête
-            $query = "SELECT a.type, a.modele, a.numero_serie, m.nom_marque, s.nom_salle, a.etat 
+            $query = "SELECT a.type, a.modele, a.numero_inventaire, m.nom_marque, s.nom_salle, a.etat 
                       FROM appareils a
                       LEFT JOIN marque m ON a.id_marque = m.id_marque
                       LEFT JOIN salles s ON a.id_salle = s.id_salle
-                      WHERE 1=1";
+                      WHERE a.supprime_le IS NULL";
             
             // Récupération des filtres si on n'exporte pas tout
             if (!$all && isset($_SESSION['filters']['appareil'])) {
@@ -85,7 +85,7 @@ try {
             
             // Configuration de l'export
             $filename = 'export_appareils_' . date('Y-m-d');
-            $headers = ['Type', 'Modèle', 'Numéro de série', 'Marque', 'Salle', 'État'];
+            $headers = ['Type', 'Modèle', 'Numéro d\'inventaire', 'Marque', 'Salle', 'État'];
             break;
             
         case 'unite':

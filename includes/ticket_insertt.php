@@ -85,6 +85,38 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && !isset($_POST['filtre'])) {
             }
              // Ajoutez des vérifications similaires pour poste/salle, peripherique/poste, unite/poste si nécessaire
 
+            // Vérification d'un ticket déjà existant pour le même matériel/poste
+            $query = "SELECT id_ticket, etat FROM tickets WHERE (";
+            $conditions = [];
+            $params = [];
+            if ($id_poste) {
+                $conditions[] = "id_poste = ?";
+                $params[] = $id_poste;
+            }
+            if ($id_appareil) {
+                $conditions[] = "id_appareil = ?";
+                $params[] = $id_appareil;
+            }
+            if ($id_peripherique) {
+                $conditions[] = "id_peripherique = ?";
+                $params[] = $id_peripherique;
+            }
+            if ($id_unite) {
+                $conditions[] = "id_unite = ?";
+                $params[] = $id_unite;
+            }
+            if (!empty($conditions)) {
+                $query .= implode(' OR ', $conditions);
+                $query .= ") AND (etat = 'Ouvert' OR etat = 'En cours') LIMIT 1";
+                $stmt = $pdo->prepare($query);
+                $stmt->execute($params);
+                $ticket_existant = $stmt->fetch();
+                if ($ticket_existant) {
+                    header('Location: ../pages/user/create_ticket.php?alerte=' . urlencode('Ce matériel ou poste est déjà signalé dans un ticket (état : ' . $ticket_existant['etat'] . ').'));
+                    exit;
+                }
+            }
+
             // Préparation des données pour l'insertion
             $data = [
                 ':id_user' => $id_user,
@@ -163,6 +195,38 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && !isset($_POST['filtre'])) {
             }
              // Ajoutez des vérifications similaires pour poste/salle, peripherique/poste, unite/poste si nécessaire
 
+
+            // Vérification d'un ticket déjà existant pour le même matériel/poste
+            $query = "SELECT id_ticket, etat FROM tickets WHERE (";
+            $conditions = [];
+            $params = [];
+            if ($id_poste) {
+                $conditions[] = "id_poste = ?";
+                $params[] = $id_poste;
+            }
+            if ($id_appareil) {
+                $conditions[] = "id_appareil = ?";
+                $params[] = $id_appareil;
+            }
+            if ($id_peripherique) {
+                $conditions[] = "id_peripherique = ?";
+                $params[] = $id_peripherique;
+            }
+            if ($id_unite) {
+                $conditions[] = "id_unite = ?";
+                $params[] = $id_unite;
+            }
+            if (!empty($conditions)) {
+                $query .= implode(' OR ', $conditions);
+                $query .= ") AND (etat = 'Ouvert' OR etat = 'En cours') LIMIT 1";
+                $stmt = $pdo->prepare($query);
+                $stmt->execute($params);
+                $ticket_existant = $stmt->fetch();
+                if ($ticket_existant) {
+                    header('Location: ../pages/user/create_ticket.php?alerte=' . urlencode('Ce matériel ou poste est déjà signalé dans un ticket (état : ' . $ticket_existant['etat'] . ').'));
+                    exit;
+                }
+            }
 
             // Préparation des données
             $data = [

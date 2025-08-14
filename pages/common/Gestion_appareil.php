@@ -294,7 +294,7 @@ try { // Début du bloc try pour gestion d'erreurs
 
     $searchColumns = [
         'modele' => 'Modèle',
-        'numero_serie' => 'Numéro de série'
+        'numero_inventaire' => 'Numéro d\'inventaire'
     ];
 
     echo getSearchForm($search, $searchColumns);
@@ -319,8 +319,8 @@ try { // Début du bloc try pour gestion d'erreurs
                 case 'modele':
                     $whereClauses[] = "a.modele LIKE ?";
                     break;
-                case 'numero_serie':
-                    $whereClauses[] = "a.numero_serie LIKE ?";
+                case 'numero_inventaire':
+                    $whereClauses[] = "a.numero_inventaire LIKE ?";
                     break;
                 case 'nom_marque':
                     $whereClauses[] = "m.nom_marque LIKE ?";
@@ -358,7 +358,7 @@ try { // Début du bloc try pour gestion d'erreurs
     
     // Affichage du message d'information pour l'exportation
     if (isset($_SESSION['info'])) {
-        echo '<div class="alert alert-info">' . htmlspecialchars($_SESSION['info']) . '</div>';
+        echo '<div class="alert alert-info">' . strip_tags($_SESSION['info'], '<strong>') . '</div>';
         unset($_SESSION['info']); // On supprime le message après l'avoir affiché
     }
 
@@ -373,7 +373,7 @@ try { // Début du bloc try pour gestion d'erreurs
                     <tr>
                         <th>Type</th>
                         <th>Modèle</th>
-                        <th>N° Série</th>
+                        <th>N° Inventaire</th>
                         <th>Marque</th>
                         <th>Salle</th>
                         <th>État</th>
@@ -385,14 +385,16 @@ try { // Début du bloc try pour gestion d'erreurs
                         <tr>
                             <td><?= htmlspecialchars($appareil['type']) ?></td>
                             <td><?= htmlspecialchars($appareil['modele']) ?></td>
-                            <td><?= htmlspecialchars($appareil['numero_serie']) ?></td>
+                            <td><?= htmlspecialchars($appareil['numero_inventaire']) ?></td>
                             <td><?= htmlspecialchars($appareil['nom_marque'] ?? 'Non définie') ?></td>
                             <td><?= htmlspecialchars(empty($appareil['nom_salle']) ? 'Non assigné' : $appareil['nom_salle']) ?></td>
                             <td>
                                 <?php if ($appareil['etat'] === 'Operationnel') : ?>
                                     <span class="badge-success">Opérationnel</span>
-                                <?php else : ?>
+                                <?php elseif ($appareil['etat'] === 'en_panne') : ?>
                                     <span class="badge-danger">En panne</span>
+                                <?php else : ?>
+                                    <span class="badge-danger"><?= htmlspecialchars($appareil['etat']) ?></span>
                                 <?php endif; ?>
                             </td>
                             <td>

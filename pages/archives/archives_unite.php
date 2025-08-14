@@ -25,7 +25,7 @@ try {
     
     // Traitement de la confirmation de restauration
     if (isset($_POST['restaurer']) && isset($_POST['id_archive'])) {
-        header('Location: ../../includes/gestion.php?action=restaurer_unite&id=' . $_POST['id_archive']);
+        header('Location: ../../includes/gestion.php?action=restaurer_unite&id_archive=' . $_POST['id_archive']);
         exit();
     }
     

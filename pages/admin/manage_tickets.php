@@ -233,6 +233,8 @@ foreach ($tickets as &$ticket) {
         }
     }
 }
+// Important: rompre la référence pour éviter des duplications/écrasements lors des boucles suivantes
+unset($ticket);
 ?>
 
 <!DOCTYPE html>

@@ -283,6 +283,15 @@ body.d-flex {
     padding: 15px;
     margin-bottom: 20px;
     box-shadow: 0 0 10px rgba(0,0,0,0.05);
+    transition: margin-left 0.3s ease;
+}
+
+body:not(.sidebar-collapsed) .main-content {
+    margin-left: 250px;
+}
+
+body.sidebar-collapsed .main-content {
+    margin-left: 60px;
 }
 
 /* Styles pour les cartes statistiques */
