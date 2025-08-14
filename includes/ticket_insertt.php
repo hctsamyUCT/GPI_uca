@@ -85,7 +85,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && !isset($_POST['filtre'])) {
             }
              // Ajoutez des vérifications similaires pour poste/salle, peripherique/poste, unite/poste si nécessaire
 
-            // Vérification d'un ticket déjà existant pour le même matériel/poste
+            // Vérification d'un ticket déjà existant pour le même matériel/poste ET la même catégorie
             $query = "SELECT id_ticket, etat FROM tickets WHERE (";
             $conditions = [];
             $params = [];
@@ -107,8 +107,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && !isset($_POST['filtre'])) {
             }
             if (!empty($conditions)) {
                 $query .= implode(' OR ', $conditions);
-                $query .= ") AND (etat = 'Ouvert' OR etat = 'En cours') LIMIT 1";
+                $query .= ") AND (etat = 'Ouvert' OR etat = 'En cours') AND categorie = ? LIMIT 1";
                 $stmt = $pdo->prepare($query);
+                // Ajouter la catégorie à la fin des paramètres
+                $params[] = $categorie;
                 $stmt->execute($params);
                 $ticket_existant = $stmt->fetch();
                 if ($ticket_existant) {
@@ -196,7 +198,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && !isset($_POST['filtre'])) {
              // Ajoutez des vérifications similaires pour poste/salle, peripherique/poste, unite/poste si nécessaire
 
 
-            // Vérification d'un ticket déjà existant pour le même matériel/poste
+            // Vérification d'un ticket déjà existant pour le même matériel/poste ET la même catégorie
             $query = "SELECT id_ticket, etat FROM tickets WHERE (";
             $conditions = [];
             $params = [];
@@ -218,8 +220,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && !isset($_POST['filtre'])) {
             }
             if (!empty($conditions)) {
                 $query .= implode(' OR ', $conditions);
-                $query .= ") AND (etat = 'Ouvert' OR etat = 'En cours') LIMIT 1";
+                $query .= ") AND (etat = 'Ouvert' OR etat = 'En cours') AND categorie = ? LIMIT 1";
                 $stmt = $pdo->prepare($query);
+                // Ajouter la catégorie à la fin des paramètres
+                $params[] = $_POST['categorie'] ?? '';
                 $stmt->execute($params);
                 $ticket_existant = $stmt->fetch();
                 if ($ticket_existant) {
