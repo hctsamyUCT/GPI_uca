@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Structure du Projet GPII</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f5f7fa;
+        }
+        .header {
+            background-color: #2a4b8d;
+            color: white;
+            text-align: center;
+            padding: 20px 0;
+            margin-bottom: 30px;
+        }
+        .container {
+            display: flex;
+            justify-content: space-between;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        .structure-section {
+            background-color: #f0f4f8;
+            border-radius: 8px;
+            padding: 20px;
+            width: 45%;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .info-section {
+            background-color: white;
+            border-radius: 8px;
+            padding: 20px;
+            width: 45%;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+        h1 {
+            margin: 0;
+            font-size: 28px;
+        }
+        h2 {
+            color: #2a4b8d;
+            border-bottom: 2px solid #e1e8f0;
+            padding-bottom: 10px;
+            margin-top: 0;
+        }
+        ul {
+            list-style-type: none;
+            padding-left: 10px;
+        }
+        li {
+            margin-bottom: 8px;
+            position: relative;
+        }
+        .folder {
+            color: #2a4b8d;
+            font-weight: bold;
+        }
+        .file {
+            color: #333;
+        }
+        .folder::before {
+            content: "📁";
+            margin-right: 5px;
+        }
+        .file::before {
+            content: "📄";
+            margin-right: 5px;
+        }
+        .check-icon {
+            color: #4CAF50;
+            margin-right: 10px;
+        }
+        .architecture-section {
+            margin-top: 20px;
+        }
+        .architecture-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        .architecture-icon {
+            margin-right: 10px;
+            font-size: 20px;
+            width: 30px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>STRUCTURE DU PROJET</h1>
+    </div>
+    
+    <div class="container">
+        <div class="structure-section">
+            <ul>
+                <li class="folder">gpii_2
+                    <ul>
+                        <li class="folder">assets
+                            <ul>
+                                <li class="folder">css
+                                    <ul>
+                                        <li class="file">bootstrap.css</li>
+                                        <li class="file">custom.css</li>
+                                        <li class="file">dashboard.css</li>
+                                    </ul>
+                                </li>
+                            </ul>
+                        </li>
+                        <li class="folder">includes
+                            <ul>
+                                <li class="file">export.php</li>
+                                <li class="file">filters.php</li>
+                                <li class="file">functions.php</li>
+                                <li class="file">gestion.php</li>
+                                <li class="file">index.php</li>
+                                <li class="file">init_admin.php</li>
+                                <li class="file">logout.php</li>
+                                <li class="file">views.php</li>
+                                <li class="file">xlsxwriter.class.php</li>
+                                <li class="folder">tools
+                                    <ul>
+                                        <li class="file">merge.php</li>
+                                    </ul>
+                                </li>
+                            </ul>
+                        </li>
+                        <li class="folder">pages
+                            <ul>
+                                <li class="folder">admin
+                                    <ul>
+                                        <li class="file">ajouter_user.php</li>
+                                        <li class="file">gestion_references.php</li>
+                                        <li class="file">gestion_users.php</li>
+                                        <li class="file">manage_tickets.php</li>
+                                        <li class="file">modifier_user.php</li>
+                                        <li class="file">statistiques.php</li>
+                                        <li class="file">ticket_details.php</li>
+                                    </ul>
+                                </li>
+                                <li class="folder">archives
+                                    <ul>
+                                        <li class="file">archives_appareil.php</li>
+                                        <li class="file">archives_peripherique.php</li>
+                                        <li class="file">archives_unite.php</li>
+                                    </ul>
+                                </li>
+                                <li class="folder">common
+                                    <ul>
+                                        <li class="file">Gestion_appareil.php</li>
+                                        <li class="file">Gestion_unit.php</li>
+                                        <li class="file">dahbord.php</li>
+                                        <li class="file">gestion_peripherique.php</li>
+                                        <li class="file">gestion_poste.php</li>
+                                        <li class="file">views_all.php</li>
+                                    </ul>
+                                </li>
+                                <li class="folder">tickets_par_salle
+                                    <ul>
+                                        <li class="file">create_tik_salle.php</li>
+                                        <li class="file">selection_page.php</li>
+                                    </ul>
+                                </li>
+                                <li class="folder">user
+                                    <ul>
+                                        <li class="file">create_ticket.php</li>
+                                    </ul>
+                                </li>
+                            </ul>
+                        </li>
+                        <li class="file">index.php</li>
+                        <li class="file">README.md</li>
+                    </ul>
+                </li>
+            </ul>
+        </div>
+        
+        <div class="info-section">
+            <h2>Organisation des fichiers</h2>
+            <ul>
+                <li><span class="check-icon">✓</span> <strong>config/</strong> : Contient la configuration de la base de données</li>
+                <li><span class="check-icon">✓</span> <strong>includes/</strong> : Contient les fonctions et classes utilitaires du système</li>
+                <li><span class="check-icon">✓</span> <strong>pages/</strong> : Contient les différentes pages de l'application organisées par rôle</li>
+                <li><span class="check-icon">✓</span> <strong>assets/</strong> : Contient les ressources CSS pour l'interface utilisateur</li>
+                <li><span class="check-icon">✓</span> <strong>index.php</strong> : Point d'entrée principal de l'application</li>
+            </ul>
+            
+            <div class="architecture-section">
+                <h2>Architecture logicielle</h2>
+                
+                <div class="architecture-item">
+                    <div class="architecture-icon">📂</div>
+                    <div>
+                        <strong>Organisation modulaire</strong> : Structure par dossiers fonctionnels (admin, user, common, archives)
+                    </div>
+                </div>
+                
+                <div class="architecture-item">
+                    <div class="architecture-icon">🔄</div>
+                    <div>
+                        <strong>Séparation des responsabilités</strong> : Fonctions utilitaires dans includes/, pages dans pages/
+                    </div>
+                </div>
+                
+                <div class="architecture-item">
+                    <div class="architecture-icon">🔒</div>
+                    <div>
+                        <strong>Authentification par rôles</strong> : Séparation des interfaces admin/user avec contrôle d'accès
+                    </div>
+                </div>
+                
+                <div class="architecture-item">
+                    <div class="architecture-icon">🔧</div>
+                    <div>
+                        <strong>Outils spécialisés</strong> : Fonctionnalités d'export, gestion de tickets et statistiques
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

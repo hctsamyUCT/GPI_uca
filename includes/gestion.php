@@ -274,7 +274,7 @@ try { // Début du bloc de gestion d'erreurs
                 $required = ['ram', 'processeur', 'disque_dur_1_type', 'disque_dur_1_capacite'];
                 foreach ($required as $field) {
                     if (empty($_POST[$field])) {
-                        header('Location: ../pages/common/Gestion_unit.php?erreur=Tous les champs obligatoires doivent être remplis');
+                        header('Location: ../pages/common/gestion_unit.php?erreur=Tous les champs obligatoires doivent être remplis');
                         exit;
                     }
                 }
@@ -300,7 +300,7 @@ try { // Début du bloc de gestion d'erreurs
                 $check = $pdo->prepare("SELECT id_unite FROM unite WHERE numero_inventaire = ?");
                 $check->execute([$numero_inventaire]);
                 if ($check->fetch()) {
-                    header('Location: ../pages/common/Gestion_unit.php?erreur=Conflit sur le numéro d\'inventaire généré, réessayez.');
+                    header('Location: ../pages/common/gestion_unit.php?erreur=Conflit sur le numéro d\'inventaire généré, réessayez.');
                     exit;
                 }
 
@@ -338,7 +338,13 @@ try { // Début du bloc de gestion d'erreurs
                 }
 
                 $_SESSION['info'] = "Unité ajoutée avec succès. Numéro d'inventaire généré : <strong>" . htmlspecialchars($numero_inventaire) . "</strong>";
-                header('Location: ../pages/common/Gestion_unit.php?succes=1');
+                // Stocker le message de succès dans la session pour la modification
+                $_SESSION['message'] = [
+                    'text' => "L'unité <strong>" . htmlspecialchars($_POST['numero_inventaire']) . "</strong> a été modifiée avec succès.",
+                    'type' => 'success'
+                ];
+                
+                header('Location: ../pages/common/gestion_unit.php');
                 exit;
             }
 
@@ -453,7 +459,7 @@ try { // Début du bloc de gestion d'erreurs
 
                         <div class="form-group">
                             <button type="submit" class="btn btn-primary">Ajouter</button>
-                            <a href="../pages/common/Gestion_unit.php" class="btn btn-secondary">Annuler</a>
+                            <a href="../pages/common/gestion_unit.php" class="btn btn-secondary">Annuler</a>
                         </div>
                     </form>
                 </div>
@@ -465,7 +471,7 @@ try { // Début du bloc de gestion d'erreurs
 
         case 'modifier_unite':
             if (!$id) {
-                header('Location: ../pages/common/Gestion_unit.php?erreur=ID manquant');
+                header('Location: ../pages/common/gestion_unit.php?erreur=ID manquant');
                 exit;
             }
 
@@ -477,7 +483,7 @@ try { // Début du bloc de gestion d'erreurs
             $unite = $stmt->fetch();
 
             if (!$unite) {
-                header('Location: ../pages/common/Gestion_unit.php?erreur=Unité introuvable');
+                header('Location: ../pages/common/gestion_unit.php?erreur=Unité introuvable');
                 exit;
             }
 
@@ -486,7 +492,7 @@ try { // Début du bloc de gestion d'erreurs
                 $required = ['ram', 'processeur', 'disque_dur_1_type', 'disque_dur_1_capacite'];
                 foreach ($required as $field) {
                     if (empty($_POST[$field])) {
-                        header('Location: ../pages/common/Gestion_unit.php?erreur=Tous les champs obligatoires doivent être remplis');
+                        header('Location: ../pages/common/gestion_unit.php?erreur=Tous les champs obligatoires doivent être remplis');
                         exit;
                     }
                 }
@@ -495,7 +501,7 @@ try { // Début du bloc de gestion d'erreurs
                 $check = $pdo->prepare("SELECT id_unite FROM unite WHERE numero_inventaire = ? AND id_unite != ?");
                 $check->execute([$_POST['numero_inventaire'], $id]);
                 if ($check->fetch()) {
-                    header('Location: ../pages/common/Gestion_unit.php?erreur=Ce numéro d\'inventaire existe déjà');
+                    header('Location: ../pages/common/gestion_unit.php?erreur=Ce numéro d\'inventaire existe déjà');
                     exit;
                 }
 
@@ -539,7 +545,7 @@ try { // Début du bloc de gestion d'erreurs
                     $stmt->execute([$id]);
                 }
 
-                header('Location: ../pages/common/Gestion_unit.php?succes=1');
+                header('Location: ../pages/common/gestion_unit.php?succes=1');
                 exit;
             }
 
@@ -653,7 +659,7 @@ try { // Début du bloc de gestion d'erreurs
 
                         <div class="form-group">
                             <button type="submit" class="btn btn-primary">Modifier</button>
-                            <a href="../pages/common/Gestion_unit.php" class="btn btn-secondary">Annuler</a>
+                            <a href="../pages/common/gestion_unit.php" class="btn btn-secondary">Annuler</a>
                         </div>
                     </form>
                 </div>
@@ -664,15 +670,33 @@ try { // Début du bloc de gestion d'erreurs
 
         case 'supprimer_unite':
             if (!$id) {
-                header('Location: ../pages/common/Gestion_unit.php?erreur=ID manquant');
+                header('Location: ../pages/common/gestion_unit.php?erreur=ID manquant');
                 exit;
             }
+
+            // Récupérer le numéro d'inventaire avant suppression pour le message
+            $stmt = $pdo->prepare("SELECT numero_inventaire FROM unite WHERE id_unite = ?");
+            $stmt->execute([$id]);
+            $unite = $stmt->fetch();
+            
+            if (!$unite) {
+                header('Location: ../pages/common/gestion_unit.php?erreur=Unité introuvable');
+                exit;
+            }
+            
+            $numero_inventaire = $unite['numero_inventaire'];
 
             // Suppression physique pour activer le trigger d'archivage
             $stmt = $pdo->prepare("DELETE FROM unite WHERE id_unite = ?");
             $stmt->execute([$id]);
 
-            header('Location: ../pages/common/gestion_unit.php?succes=1');
+            // Stocker le message de succès dans la session avec le numéro d'inventaire
+            $_SESSION['message'] = [
+                'text' => "L'unité <strong>" . htmlspecialchars($numero_inventaire) . "</strong> a été supprimée avec succès.",
+                'type' => 'success'
+            ];
+
+            header('Location: ../pages/common/gestion_unit.php');
             exit;
 
         case 'ajouter_peripherique':
@@ -1003,13 +1027,10 @@ try { // Début du bloc de gestion d'erreurs
 
             // Affichage formulaire
             $salles = $pdo->query("SELECT * FROM salles ORDER BY nom_salle")->fetchAll();
-            $peripheriques = $pdo->query("
-                SELECT p.* 
-                FROM peripherique p
-                LEFT JOIN poste_peripherique pp ON p.id_peripherique = pp.id_peripherique
-                WHERE p.supprime_le IS NULL AND pp.id_poste IS NULL
-            ")->fetchAll();
-            $unites = $pdo->query("SELECT * FROM unite WHERE supprime_le IS NULL")->fetchAll();
+            // En mode ajout, ne pas référencer $id (non défini). On propose uniquement les périphériques non déjà affectés.
+            $peripheriques = $pdo->query("\n                SELECT p.* \n                FROM peripherique p\n                LEFT JOIN poste_peripherique pp ON p.id_peripherique = pp.id_peripherique\n                WHERE p.supprime_le IS NULL \n                AND pp.id_poste IS NULL\n            ")->fetchAll();
+            // Proposer uniquement les unités non déjà affectées à un poste
+            $unites = $pdo->query("\n                SELECT u.*\n                FROM unite u\n                LEFT JOIN poste_unite pu ON u.id_unite = pu.id_unite\n                WHERE u.supprime_le IS NULL\n                AND pu.id_poste IS NULL\n                ORDER BY u.numero_inventaire\n            ")->fetchAll();
 
             afficherHeader('Ajouter un poste');
             echo '<h2>Ajouter un nouveau poste</h2>';
@@ -1239,7 +1260,7 @@ try { // Début du bloc de gestion d'erreurs
         case 'restaurer_unite':
             try {
                 restaurerUnite($_GET['id_archive']);
-                header('Location: ../pages/common/Gestion_unit.php?succes=1');
+                header('Location: ../pages/common/gestion_unit.php?succes=1');
             } catch (Exception $e) {
                 header('Location: ../pages/archives/archives_unite.php?erreur=' . urlencode($e->getMessage()));
             }

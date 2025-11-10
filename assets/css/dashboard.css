@@ -2,26 +2,27 @@
 
 /* Styles généraux des cartes */
 .dashboard-card {
-    background-color: #fff;
-    border-radius: 8px;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-    padding: 15px;
-    margin-bottom: 15px;
-    transition: all 0.3s ease;
+	background-color: #fff;
+	border-radius: 12px;
+	box-shadow: 0 6px 14px rgba(17, 24, 39, 0.08);
+	padding: 16px;
+	margin-bottom: 16px;
+	border: 1px solid #eef2f7;
+	transition: box-shadow 0.25s ease, transform 0.25s ease;
 }
 
 .dashboard-card:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 5px 15px rgba(0,0,0,0.15);
+	transform: translateY(-2px);
+	box-shadow: 0 12px 24px rgba(17, 24, 39, 0.12);
 }
 
 .dashboard-card h3 {
-    font-size: 1.1rem;
-    font-weight: 600;
-    margin-bottom: 10px;
-    color: #2f3f63;
-    border-bottom: 1px solid #f0f0f0;
-    padding-bottom: 8px;
+	font-size: 1.15rem;
+	font-weight: 700;
+	margin-bottom: 12px;
+	color: #1f2937;
+	border-bottom: 1px solid #f3f4f6;
+	padding-bottom: 10px;
 }
 
 /* Styles pour les statistiques */
@@ -32,24 +33,34 @@
 }
 
 .stat-item {
-    flex: 1;
-    min-width: 120px;
-    text-align: center;
-    padding: 10px;
-    border-radius: 6px;
-    background-color: #f8f9fa;
+	flex: 1;
+	min-width: 220px;
+	display: flex;
+	flex-direction: column;
+	gap: 10px;
+	padding: 14px;
+	border-radius: 12px;
+	background-color: #f9fafb;
+	border: 1px solid #eef2f7;
 }
 
 .stat-number {
-    font-size: 1.8rem;
-    font-weight: 700;
-    margin-bottom: 3px;
-    color: #2f3f63;
+	font-size: 2rem;
+	font-weight: 800;
+	line-height: 1;
+	color: #111827;
+}
+
+/* Animation compteur d'augmentation douce */
+.count-animate {
+	position: relative;
+	will-change: contents;
 }
 
 .stat-label {
-    font-size: 0.85rem;
-    color: #6c757d;
+	font-size: 0.95rem;
+	font-weight: 600;
+	color: #4b5563;
 }
 
 /* Styles spécifiques pour les différents types d'équipements */
@@ -71,21 +82,52 @@
 
 /* Styles pour les sous-statistiques */
 .sub-stats {
-    display: flex;
-    flex-wrap: wrap;
-    margin-top: 5px;
+	display: flex;
+	flex-direction: column;
+	gap: 8px;
+	margin-top: 8px;
 }
 
 .sub-stat {
-    flex: 1;
-    min-width: 70px;
-    padding: 5px;
-    font-size: 0.8rem;
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	padding: 8px 10px;
+	background: #ffffff;
+	border: 1px solid #eef2f7;
+	border-radius: 10px;
+	font-size: 0.9rem;
+    gap: 10px;
 }
 
 .sub-stat-number {
-    font-weight: 600;
-    font-size: 0.9rem;
+	font-weight: 700;
+	font-size: 0.95rem;
+}
+
+/* Pastilles de statut (icônes rondes) */
+.dot {
+	width: 10px;
+	height: 10px;
+	border-radius: 50%;
+	margin-right: 8px;
+}
+
+.dot-success { background-color: #10b981; }
+.dot-danger { background-color: #ef4444; }
+.dot-warning { background-color: #f59e0b; }
+.dot-info { background-color: #3b82f6; }
+
+.text-danger-600 { color: #dc2626; }
+.text-success-600 { color: #059669; }
+
+.badge {
+	display: inline-flex;
+	align-items: center;
+	gap: 6px;
+	font-size: 0.85rem;
+	font-weight: 600;
+	white-space: nowrap;
 }
 
 /* Styles pour les tickets */
@@ -96,10 +138,10 @@
 }
 
 .ticket-total {
-    font-size: 1.6rem;
-    font-weight: 700;
-    text-align: center;
-    color: #2f3f63;
+	font-size: 1.8rem;
+	font-weight: 800;
+	text-align: center;
+	color: #111827;
 }
 
 .ticket-status {
@@ -134,10 +176,10 @@
 
 /* Styles pour les graphiques */
 .chart-container {
-    height: 250px;
-    margin-top: 10px;
-    position: relative;
-    transition: all 0.3s ease;
+	height: 260px;
+	margin-top: 10px;
+	position: relative;
+	transition: all 0.3s ease;
 }
 
 .donut-chart-container {
@@ -155,13 +197,13 @@
 
 /* Styles pour l'évolution des tickets */
 .evolution-chart {
-    height: 250px;
-    margin-top: 10px;
-    background-color: #ffffff;
-    border-radius: 8px;
-    padding: 10px;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
-    transition: all 0.3s ease;
+	height: 260px;
+	margin-top: 10px;
+	background-color: #ffffff;
+	border-radius: 10px;
+	padding: 12px;
+	box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+	transition: all 0.3s ease;
 }
 
 /* Styles pour les légendes des graphiques */
@@ -213,22 +255,13 @@
 }
 
 /* Responsive */
+@media (max-width: 992px) {
+	.stat-item { min-width: 100%; }
+}
+
 @media (max-width: 768px) {
-    .stats-container {
-        flex-direction: column;
-    }
-    
-    .stat-item {
-        width: 100%;
-    }
-    
-    .donut-chart-container {
-        flex-direction: column;
-        align-items: center;
-    }
-    
-    .donut-chart {
-        width: 100%;
-        margin-bottom: 15px;
-    }
+	.stats-container { flex-direction: column; }
+	.stat-item { width: 100%; }
+	.donut-chart-container { flex-direction: column; align-items: center; }
+	.donut-chart { width: 100%; margin-bottom: 15px; }
 }

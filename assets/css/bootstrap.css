@@ -4,9 +4,11 @@
 
 /* Variables de couleurs */
 :root {
-  /* Couleurs principales */
-  --primary: #007bff;
-  --primary-dark: #0056b3;
+  /* Couleurs principales harmonisées avec la sidebar */
+  --primary: #2f3f63;
+  --primary-dark: #25334d;
+  /* Décalage latéral du contenu (navbar + body) pour la sidebar */
+  --sidebar-offset: 250px;
   --secondary: #6c757d;
   --success: #28a745;
   --danger: #dc3545;
@@ -268,9 +270,15 @@ h1, h2, h3, h4, h5, h6 {
   justify-content: space-between;
   padding: 0.5rem 1rem;
   position: fixed;
-  top: -75px;
+  top: 0; /* Navbar visible en haut de la page */
   right: 0;
+  left: 250px; /* reste alignée quand la sidebar se replie */
   z-index: 999;
+}
+
+/* Sidebar réduite: ajuster la navbar pour la sidebar réduite */
+body.sidebar-collapsed .navbar {
+  left: 60px;
 }
 
 .navbar-brand {
@@ -337,4 +345,24 @@ h1, h2, h3, h4, h5, h6 {
 .user-role {
   font-size: 0.8rem;
   margin-left: 5px;
+}
+
+/* ====== Responsivité + QR Code (create_tik_salle) ====== */
+.qrcode-wrapper {
+  display: inline-block;
+  padding: 16px;
+  border: 2px solid var(--primary);
+  border-radius: 12px;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+  background: #fff;
+}
+
+.qrcode-img {
+  max-width: 220px;
+  width: 100%;
+  height: auto;
+}
+
+@media (max-width: 576px) {
+  .qrcode-img { max-width: 70vw; }
 }

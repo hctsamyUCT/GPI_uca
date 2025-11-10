@@ -71,85 +71,85 @@ $tickets_par_priorite = $stmt->fetchAll();
 $stmt = $pdo->query("SELECT DATE_FORMAT(date_creation, '%Y-%m') as mois, COUNT(*) as total FROM tickets GROUP BY mois ORDER BY mois DESC LIMIT 6");
 $evolution_tickets = $stmt->fetchAll();
 
-// Ajout du lien vers le fichier CSS du tableau de bord
-echo '<link rel="stylesheet" href="assets/css/dashboard.css">';
+// Ajout du lien vers le fichier CSS du tableau de bord (niveau 2)
+echo '<link rel="stylesheet" href="../../assets/css/dashboard.css">';
 ?>
 
 <!-- Conteneur principal avec classe main-content pour une meilleure séparation -->
-<div class="main-content">
-    <h1 class="text-center">Gestion du Parc Informatique</h1>
+<div class="main-content" style="padding-top: 80px;">
+    <h1 class="text-center mb-4"><i class="bi bi-speedometer2 mr-2"></i>Gestion du Parc Informatique</h1>
     
     <!-- Section Vue d'ensemble -->
     <div class="dashboard-card">
         <h3>Vue d'ensemble</h3>
         <div class="row">
             <!-- Unités Centrales -->
-            <div class="col-md-3">
+            <div class="col-12 col-sm-6 col-lg-3">
                 <div class="stat-item stat-unites">
-                    <div class="stat-number"><?= $unites['total'] ?></div>
-                    <div class="stat-label">Unités Centrales</div>
+                    <div class="stat-number count-animate" data-count="<?= (int)$unites['total'] ?>">0</div>
+                    <div class="stat-label"><i class="bi bi-cpu mr-1"></i>Unités Centrales</div>
                     <div class="sub-stats">
                         <div class="sub-stat">
+                            <div class="badge"><span class="dot dot-success"></span><span>Opér.</span></div>
                             <span class="sub-stat-number text-success"><?= $unites['operationnelles'] ?></span>
-                            <span>Opérationnelles</span>
                         </div>
                         <div class="sub-stat">
+                            <div class="badge"><span class="dot dot-danger"></span><span>Panne</span></div>
                             <span class="sub-stat-number text-danger"><?= $unites['en_panne'] ?></span>
-                            <span>En panne</span>
                         </div>
                     </div>
                 </div>
             </div>
             
             <!-- Périphériques -->
-            <div class="col-md-3">
+            <div class="col-12 col-sm-6 col-lg-3">
                 <div class="stat-item stat-peripheriques">
-                    <div class="stat-number"><?= $peripheriques['total'] ?></div>
-                    <div class="stat-label">Périphériques</div>
+                    <div class="stat-number count-animate" data-count="<?= (int)$peripheriques['total'] ?>">0</div>
+                    <div class="stat-label"><i class="bi bi-keyboard mr-1"></i>Périphériques</div>
                     <div class="sub-stats">
                         <div class="sub-stat">
+                            <div class="badge"><span class="dot dot-info"></span><span>Écrans</span></div>
                             <span class="sub-stat-number"><?= $peripheriques['ecrans'] ?></span>
-                            <span>Écrans</span>
                         </div>
                         <div class="sub-stat">
+                            <div class="badge"><span class="dot dot-warning"></span><span>Claviers</span></div>
                             <span class="sub-stat-number"><?= $peripheriques['claviers'] ?></span>
-                            <span>Claviers</span>
                         </div>
                         <div class="sub-stat">
+                            <div class="badge"><span class="dot dot-success"></span><span>Souris</span></div>
                             <span class="sub-stat-number"><?= $peripheriques['souris'] ?></span>
-                            <span>Souris</span>
                         </div>
                     </div>
                 </div>
             </div>
             
             <!-- Appareils -->
-            <div class="col-md-3">
+            <div class="col-12 col-sm-6 col-lg-3">
                 <div class="stat-item stat-appareils">
-                    <div class="stat-number"><?= $appareils['total'] ?></div>
-                    <div class="stat-label">Appareils</div>
+                    <div class="stat-number count-animate" data-count="<?= (int)$appareils['total'] ?>">0</div>
+                    <div class="stat-label"><i class="bi bi-hdd-network mr-1"></i>Appareils</div>
                     <div class="sub-stats">
                         <div class="sub-stat">
+                            <div class="badge"><span class="dot dot-info"></span><span>Imprim.</span></div>
                             <span class="sub-stat-number"><?= $appareils['imprimantes'] ?></span>
-                            <span>Imprimantes</span>
                         </div>
                         <div class="sub-stat">
+                            <div class="badge"><span class="dot dot-warning"></span><span>Proj.</span></div>
                             <span class="sub-stat-number"><?= $appareils['projecteurs'] ?></span>
-                            <span>Projecteurs</span>
                         </div>
                     </div>
                 </div>
             </div>
             
             <!-- Postes de travail -->
-            <div class="col-md-3">
+            <div class="col-12 col-sm-6 col-lg-3">
                 <div class="stat-item stat-postes">
-                    <div class="stat-number"><?= $postes['total'] ?></div>
-                    <div class="stat-label">Postes de travail</div>
+                    <div class="stat-number count-animate" data-count="<?= (int)$postes['total'] ?>">0</div>
+                    <div class="stat-label"><i class="bi bi-pc-display mr-1"></i>Postes de travail</div>
                     <div class="sub-stats">
                         <div class="sub-stat">
+                            <div class="badge"><span class="dot dot-success"></span><span>Configurés</span></div>
                             <span class="sub-stat-number text-success"><?= $postes['operationnels'] ?></span>
-                            <span>Configurés</span>
                         </div>
                     </div>
                 </div>
@@ -163,8 +163,8 @@ echo '<link rel="stylesheet" href="assets/css/dashboard.css">';
         <div class="row">
             <!-- État des tickets -->
             <div class="col-md-4">
-                <div class="card h-100">
-                    <div class="card-header bg-light">État des tickets</div>
+                        <div class="card h-100">
+                    <div class="card-header bg-light"><i class="bi bi-ticket-perforated mr-1"></i>État des tickets</div>
                     <div class="card-body">
                         <div class="ticket-total mb-4"><?= $tickets['total'] ?></div>
                         <div class="ticket-status">
@@ -188,7 +188,7 @@ echo '<link rel="stylesheet" href="assets/css/dashboard.css">';
             <!-- Répartition par catégorie -->
             <div class="col-md-4">
                 <div class="card h-100">
-                    <div class="card-header bg-light">Types de problèmes</div>
+                    <div class="card-header bg-light"><i class="bi bi-pie-chart mr-1"></i>Types de problèmes</div>
                     <div class="card-body">
                         <div class="chart-container">
                             <canvas id="categoriesChart"></canvas>
@@ -200,7 +200,7 @@ echo '<link rel="stylesheet" href="assets/css/dashboard.css">';
             <!-- Répartition par priorité -->
             <div class="col-md-4">
                 <div class="card h-100">
-                    <div class="card-header bg-light">Niveaux d'urgence</div>
+                    <div class="card-header bg-light"><i class="bi bi-bullseye mr-1"></i>Niveaux d'urgence</div>
                     <div class="card-body">
                         <div class="chart-container">
                             <canvas id="prioritiesChart"></canvas>
@@ -232,7 +232,7 @@ echo '<link rel="stylesheet" href="assets/css/dashboard.css">';
             <!-- Évolution des tickets -->
             <div class="col-md-12 mb-4">
                 <div class="card">
-                    <div class="card-header bg-light">Évolution des tickets</div>
+                    <div class="card-header bg-light"><i class="bi bi-graph-up-arrow mr-1"></i>Évolution des tickets</div>
                     <div class="card-body">
                         <div class="evolution-chart">
                             <canvas id="ticketsEvolutionChart"></canvas>
@@ -423,3 +423,35 @@ document.addEventListener('DOMContentLoaded', function() {
 <?php
 afficherFooter();
 ?>
+<script>
+// Animation des compteurs
+document.addEventListener('DOMContentLoaded', function() {
+	const counters = document.querySelectorAll('.count-animate');
+	const easeOutCubic = t => 1 - Math.pow(1 - t, 3);
+	const animateCounter = (el) => {
+		const target = parseInt(el.getAttribute('data-count') || '0', 10);
+		const duration = 900;
+		let start = null;
+		const step = (ts) => {
+			if (!start) start = ts;
+			const progress = Math.min((ts - start) / duration, 1);
+			el.textContent = Math.floor(easeOutCubic(progress) * target);
+			if (progress < 1) requestAnimationFrame(step);
+		};
+		requestAnimationFrame(step);
+	};
+	if ('IntersectionObserver' in window) {
+		const io = new IntersectionObserver((entries, obs) => {
+			entries.forEach(entry => {
+				if (entry.isIntersecting) {
+					animateCounter(entry.target);
+					obs.unobserve(entry.target);
+				}
+			});
+		}, { threshold: 0.4 });
+		counters.forEach(c => io.observe(c));
+	} else {
+		counters.forEach(animateCounter);
+	}
+});
+</script>

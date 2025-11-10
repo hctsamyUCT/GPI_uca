@@ -36,8 +36,9 @@ function afficherHeader($titre, $niveau = 1, $afficher_sidebar = true) {
     echo '<link rel="stylesheet" href="' . $prefix . 'assets/css/bootstrap.css">';
     echo '<link rel="stylesheet" href="' . $prefix . 'assets/css/custom.css">';
     
-    // Ajout de Font Awesome pour les icônes
+    // Ajout des librairies d'icônes (Font Awesome + Bootstrap Icons)
     echo '<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">';
+    echo '<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">';
     
     // Ajout de jQuery et Bootstrap 5 JS pour les fonctionnalités avancées
     echo '<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>';
@@ -68,7 +69,7 @@ function afficherHeader($titre, $niveau = 1, $afficher_sidebar = true) {
             echo '</a>';
             echo '<ul class="sidebar-submenu">';
             echo '<li><a href="' . $prefix . 'pages/common/gestion_appareil.php"><i class="fas fa-print"></i>Projecteurs & Imprimantes</a></li>';
-            echo '<li><a href="' . $prefix . 'pages/common/Gestion_unit.php"><i class="fas fa-server"></i>Unités centrales</a></li>';
+            echo '<li><a href="' . $prefix . 'pages/common/gestion_unit.php"><i class="fas fa-server"></i>Unités centrales</a></li>';
             echo '<li><a href="' . $prefix . 'pages/common/gestion_peripherique.php"><i class="fas fa-keyboard"></i>Périphériques</a></li>';
             echo '<li><a href="' . $prefix . 'pages/common/gestion_poste.php"><i class="fas fa-desktop"></i>Postes</a></li>';
             echo '</ul>';
@@ -125,7 +126,7 @@ function afficherHeader($titre, $niveau = 1, $afficher_sidebar = true) {
     }
     
     // Navbar horizontale avec les informations utilisateur - affichée sur toutes les pages
-    echo '<nav class="navbar navbar-expand-lg navbar-dark bg-primary mb-4" style="position: relative;">';
+    echo '<nav class="navbar navbar-expand-lg navbar-dark bg-primary mb-1">';
     echo '<div class="container d-flex justify-content-between align-items-center">';
     
     // Logo ou titre pour la navbar horizontale
@@ -157,12 +158,12 @@ function afficherHeader($titre, $niveau = 1, $afficher_sidebar = true) {
     echo '</div>'; // Fin du container
     echo '</nav>';
     
-    // Contenu principal avec marge supérieure pour compenser la navbar fixe
+    // Contenu principal - l'espacement est géré par le padding-top du body
     // Ajuster la classe du conteneur en fonction de la présence de la sidebar
     if ($afficher_sidebar) {
-        echo '<div class="container" style="margin-top: 20px;">';
+        echo '<div class="container">';
     } else {
-        echo '<div class="container-fluid" style="margin-top: 20px;">';
+        echo '<div class="container-fluid">';
     }
 }
 
@@ -212,8 +213,8 @@ function afficherMessage() {
     // Vérifier si un message est stocké dans la session
     if (isset($_SESSION['message'])) {
         $message = $_SESSION['message'];
-        // Utiliser htmlspecialchars pour la sécurité
-        $messageText = htmlspecialchars($message['text'], ENT_QUOTES, 'UTF-8');
+        // Le texte peut contenir du HTML (comme <strong>), donc on n'applique pas htmlspecialchars
+        $messageText = $message['text'];
         $messageType = htmlspecialchars($message['type'], ENT_QUOTES, 'UTF-8'); // ex: 'success', 'danger'
 
         // Afficher l'alerte Bootstrap 5 (avec bouton de fermeture)
@@ -226,9 +227,22 @@ function afficherMessage() {
         // Supprimer le message de la session après l'affichage
         unset($_SESSION['message']);
     }
-    // Optionnel : Gérer aussi les messages passés par GET pour la compatibilité descendante ?
-    // else if(isset($_GET['succes'])) { ... }
-    // else if(isset($_GET['erreur'])) { ... }
+    // Gérer aussi les messages passés par GET pour la compatibilité descendante
+    else if(isset($_GET['succes']) && $_GET['succes'] == '1') {
+        // Message de succès générique (peut être utilisé par différentes actions)
+        echo '<div class="alert alert-success alert-dismissible fade show" role="alert">';
+        echo 'L\'opération s\'est déroulée avec succès.';
+        echo '<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>';
+        echo '</div>';
+    }
+    else if(isset($_GET['erreur'])) {
+        // Gérer les messages d'erreur passés par GET
+        $erreur = htmlspecialchars($_GET['erreur'], ENT_QUOTES, 'UTF-8');
+        echo '<div class="alert alert-danger alert-dismissible fade show" role="alert">';
+        echo $erreur;
+        echo '<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>';
+        echo '</div>';
+    }
 }
 
 // Fonction pour afficher le formulaire d'appareil

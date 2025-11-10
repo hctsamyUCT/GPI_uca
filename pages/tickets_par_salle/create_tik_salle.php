@@ -70,10 +70,10 @@ afficherHeader('Créer un ticket pour la salle', 2);
     <!-- QR code d'accès direct -->
     <div class="mb-4 text-center">
         <h5>QR code d'accès direct à cette page</h5>
-        <div style="display: inline-block; padding: 16px; border: 2px solid #007bff; border-radius: 12px; box-shadow: 0 4px 16px rgba(0,0,0,0.08); background: #fff;">
-            <img id="qrcode-img" src="data:image/png;base64,<?= base64_encode(file_get_contents($qrFile)) ?>" alt="QR Code Salle" style="max-width:200px; display:block; margin:auto;">
+        <div class="qrcode-wrapper">
+            <img id="qrcode-img" src="data:image/png;base64,<?= base64_encode(file_get_contents($qrFile)) ?>" alt="QR Code Salle" class="qrcode-img">
             <div class="mt-2 fw-bold text-primary" style="font-size: 1.1em;">Salle : <?= htmlspecialchars($salle['nom_salle']) ?></div>
-            <button class="btn btn-outline-primary btn-sm mt-2" onclick="downloadQR()">Télécharger le QR code</button>
+            <button class="btn btn-outline-primary btn-sm mt-2" onclick="downloadQR()"><i class="bi bi-download mr-1"></i>Télécharger le QR code</button>
         </div>
         <div class="mt-2"><small>Scannez ce QR code pour accéder directement à la création de ticket pour cette salle.</small></div>
     </div>
@@ -96,7 +96,7 @@ afficherHeader('Créer un ticket pour la salle', 2);
     <form method="POST" id="filtrePosteForm">
         <div class="form-group mb-3">
             <label for="id_poste">Poste :</label>
-            <select name="id_poste" id="id_poste" class="form-control" onchange="this.form.submit()">
+            <select name="id_poste" id="id_poste" class="form-control form-select" onchange="this.form.submit()">
                 <option value="">Sélectionner un poste</option>
                 <?php foreach($postes as $poste): ?>
                     <option value="<?= $poste['id_poste'] ?>" <?= $selectedPoste == $poste['id_poste'] ? 'selected' : '' ?>>
@@ -122,7 +122,7 @@ afficherHeader('Créer un ticket pour la salle', 2);
 
         <div class="form-group mb-3">
             <label for="id_appareil">Appareil (si non lié à un poste) :</label>
-            <select name="id_appareil" id="id_appareil" class="form-control" <?= ($selectedPoste) ? 'disabled' : '' ?>>
+            <select name="id_appareil" id="id_appareil" class="form-control form-select" <?= ($selectedPoste) ? 'disabled' : '' ?>>
                 <option value="">Sélectionner un appareil</option>
                 <?php if (!empty($appareils) && !$selectedPoste): ?>
                     <?php foreach($appareils as $appareil): ?>
@@ -137,7 +137,7 @@ afficherHeader('Créer un ticket pour la salle', 2);
 
         <div class="form-group mb-3">
             <label for="id_peripherique">Périphérique (si lié à un poste) :</label>
-            <select name="id_peripherique" id="id_peripherique" class="form-control" <?= !$selectedPoste ? 'disabled' : '' ?>>
+            <select name="id_peripherique" id="id_peripherique" class="form-control form-select" <?= !$selectedPoste ? 'disabled' : '' ?>>
                 <option value="">Sélectionner un périphérique</option>
                 <?php if ($selectedPoste): ?>
                     <?php foreach($peripheriques as $peripherique): ?>
@@ -152,7 +152,7 @@ afficherHeader('Créer un ticket pour la salle', 2);
 
         <div class="form-group mb-3">
             <label for="id_unite">Unité Centrale (si lié à un poste) :</label>
-            <select name="id_unite" id="id_unite" class="form-control" <?= !$selectedPoste ? 'disabled' : '' ?>>
+            <select name="id_unite" id="id_unite" class="form-control form-select" <?= !$selectedPoste ? 'disabled' : '' ?>>
                 <option value="">Sélectionner une unité</option>
                 <?php if ($selectedPoste): ?>
                     <?php foreach($unites as $unite): ?>
