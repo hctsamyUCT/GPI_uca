@@ -25,9 +25,9 @@ if (isset($_GET['delete']) && filter_var($_GET['delete'], FILTER_VALIDATE_INT)) 
 
         if ($user_to_delete) {
             $role_id = $user_to_delete['id_role'];
-            // Empêcher la suppression des Administrateurs (ID 1) et Techniciens (ID 2)
-            // Assurez-vous que ces ID correspondent bien à vos rôles dans la table `roles`
-            if ($role_id == 1 || $role_id == 2) {
+            // Empêcher uniquement la suppression des Administrateurs (ID 1)
+            // Les techniciens (ID 2) peuvent être supprimés par un administrateur
+            if ($role_id == 1) {
                 header('Location: gestion_users.php?erreur=role_protected');
                 exit();
             }
@@ -97,7 +97,7 @@ afficherHeader('Gestion des utilisateurs', 2); // Make sure this line is correct
              <?php
             if ($_GET['erreur'] == 'delete') echo "Erreur lors de la suppression de l'utilisateur.";
             elseif ($_GET['erreur'] == 'self_delete') echo "Vous ne pouvez pas supprimer votre propre compte."; // Message ajouté/modifié
-            elseif ($_GET['erreur'] == 'role_protected') echo "Vous ne pouvez pas supprimer un administrateur ou un technicien."; // Nouveau message
+            elseif ($_GET['erreur'] == 'role_protected') echo "Vous ne pouvez pas supprimer un administrateur."; // Nouveau message
             elseif ($_GET['erreur'] == 'invalid_id') echo "ID utilisateur invalide.";
             elseif ($_GET['erreur'] == 'not_found') echo "Utilisateur non trouvé.";
             else echo "Une erreur est survenue.";

@@ -144,8 +144,8 @@ function afficherHeader($titre, $niveau = 1, $afficher_sidebar = true) {
         $user = $stmt->fetch();
         
         echo '<div class="navbar-user-info mr-3">';
-        echo '<span class="user-name text-white mr-2">' . htmlspecialchars($user['prenom'] . ' ' . $user['nom']) . '</span>';
-        echo '<span class="user-role badge badge-light">' . htmlspecialchars($user['role_name']) . '</span>';
+        echo '<span class="user-name mr-2">' . htmlspecialchars($user['prenom'] . ' ' . $user['nom']) . '</span>';
+        echo '<span class="user-role">' . htmlspecialchars($user['role_name']) . '</span>';
         echo '</div>';
         
         echo '<a href="' . $prefix . 'includes/logout.php" class="btn btn-outline-light"><i class="fas fa-sign-out-alt mr-1"></i>Déconnexion</a>';

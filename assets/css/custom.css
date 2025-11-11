@@ -2,31 +2,35 @@
 body {
     margin: 0;
     padding: 0;
-    padding-left: 250px; /* Largeur par défaut de la sidebar */
-    padding-top: 56px; /* Espacement pour la navbar fixe (réduit pour une barre plus fine) */
     font-family: Arial, sans-serif;
     overflow-x: hidden;
-    transition: padding-left 0.25s ease, padding-top 0.3s ease;
+    transition: all 0.3s ease;
 }
 
 body .container {
     width: calc(100% - 30px);
     max-width: 1140px;
-    margin-top: 0; /* Pas besoin de margin-top car le body a déjà le padding-top */
+    margin-top: 60px; /* Augmenté pour correspondre à la navbar de 50px + padding */
     margin-left: auto;
     margin-right: auto;
-    padding-top: 12px; /* Réduit : espace suffisant entre navbar et contenu sans alourdir */
     transition: all 0.3s ease;
 }
 
 /* Mode fluide: en sidebar réduite, ajustement correct */
 body.sidebar-collapsed {
     padding-left: 60px !important; /* Largeur de la sidebar réduite */
-    padding-top: 56px; /* Maintenir l'espacement réduit pour la navbar */
+}
+
+/* Padding body basé sur la sidebar */
+body {
+    padding-left: 250px; /* Largeur par défaut de la sidebar */
+    transition: padding-left 0.25s ease;
+    margin: 0; /* Supprimer les marges par défaut */
+    padding-top: 0; /* Supprimer le padding top pour éviter l'espace blanc */
 }
 
 /* Navbar horizontale - Positionnement fixe */
-.navbar, nav.navbar.navbar-expand-lg.navbar-dark.bg-primary.mb-1 {
+.navbar {
     position: fixed !important;
     top: 0;
     left: 250px; /* Position par défaut à droite de la sidebar */
@@ -34,10 +38,12 @@ body.sidebar-collapsed {
     width: calc(100% - 250px); /* Largeur ajustée */
     z-index: 1030; /* Au-dessus de la sidebar */
     margin: 0 !important; /* Supprimer toutes les marges */
-    padding: 0.25rem 0.75rem !important; /* Padding réduit pour une barre plus fine */
+    padding: 0.5rem 1rem !important; /* Padding pour laisser de l'espace */
     transition: left 0.25s ease, width 0.25s ease;
-    min-height: 46px !important; /* Hauteur minimale réduite */
-    height: auto !important; /* Hauteur automatique pour s'adapter au contenu */
+    min-height: 50px !important; /* Hauteur suffisante pour contenir les éléments */
+    display: flex !important; /* Flex pour alignement vertical */
+    align-items: center !important; /* Centrer verticalement */
+    overflow: visible !important; /* Permettre aux éléments de ne pas être coupés */
 }
 
 /* Ajustement quand la sidebar est réduite */
@@ -46,78 +52,82 @@ body.sidebar-collapsed .navbar {
     width: calc(100% - 60px);
 }
 
-/* Règles additionnelles très spécifiques pour rendre la navbar visuellement plus fine
-   - Force padding vertical à 0 pour éviter héritage Bootstrap
-   - Aligne les éléments verticalement et réduit la taille des textes/boutons si nécessaire
-   Ces règles utilisent des sélecteurs spécifiques et !important pour éviter d'être écrasées. */
-nav.navbar.navbar-expand-lg.navbar-dark.bg-primary.mb-1,
-.navbar {
-    padding-top: 0 !important;
-    padding-bottom: 0 !important;
-    min-height: 44px !important;
+/* Container à l'intérieur de la navbar */
+.navbar .container {
+    display: flex !important;
     align-items: center !important;
-}
-
-/* Conteneur interne sans padding vertical pour ne pas augmenter la hauteur */
-.navbar > .container, .navbar > .container-fluid {
-    padding-top: 0 !important;
-    padding-bottom: 0 !important;
-}
-
-/* Brand et zone utilisateur plus compactes */
-.navbar-brand {
-    padding-top: 6px !important;
-    padding-bottom: 6px !important;
-    line-height: 1 !important;
-    font-size: 1.1rem !important;
-}
-
-.navbar-user-info {
-    padding-top: 6px !important;
-    padding-bottom: 6px !important;
-}
-
-.btn-outline-light {
-    padding-top: 0.25rem !important;
-    padding-bottom: 0.25rem !important;
-    padding-left: 0.6rem !important;
-    padding-right: 0.6rem !important;
-    font-size: 0.85rem !important;
+    justify-content: space-between !important;
+    width: 100% !important;
+    max-width: none !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    margin-top: 0 !important; /* Pas de margin-top ici */
 }
 
 /* Styles spécifiques pour les éléments utilisateur dans la navbar */
-.user-name {
-    color: #fff; /* Texte blanc pour le nom d'utilisateur */
+.navbar-user-info .user-name {
+    color: #ffffff !important; /* Texte blanc pour le nom d'utilisateur - FORCER VISIBILITÉ */
+    font-weight: 600 !important;
+    font-size: 0.85rem !important;
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.4) !important; /* Ombre pour meilleur contraste */
+    display: inline-block !important;
 }
 
-.user-role {
-    background-color: rgba(255, 255, 255, 0.2); /* Badge semi-transparent */
-    color: #fff; /* Texte blanc pour le rôle */
+.navbar-user-info .user-role {
+    background-color: rgba(255, 255, 255, 0.3) !important; /* Badge visible */
+    color: #ffffff !important; /* Texte blanc - FORCER VISIBILITÉ */
+    border: 1px solid rgba(255, 255, 255, 0.6) !important; /* Bordure visible */
+    padding: 0.25rem 0.5rem !important;
+    border-radius: 3px !important;
+    font-size: 0.7rem !important;
+    font-weight: 600 !important;
+    display: inline-block !important;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3) !important;
 }
 
-/* Modification du bouton de déconnexion pour la navbar noire */
-.btn-outline-light {
-    border-color: #444;
-    color: #fff;
-    font-size: 0.875rem; /* Taille de police normale */
-    padding: 0.375rem 0.75rem; /* Padding suffisant */
-    line-height: 1.5; /* Hauteur de ligne normale */
+/* Div contenant les infos utilisateur et le bouton */
+.navbar > .container > .d-flex {
+    display: flex !important;
+    align-items: center !important;
+    gap: 0.75rem !important;
+}
+
+/* Modification du bouton de déconnexion pour la navbar bleue */
+.navbar .btn-outline-light {
+    border-color: #ffffff !important; /* Bordure blanche visible */
+    border-width: 2px !important; /* Bordure bien visible */
+    color: #ffffff !important; /* Texte blanc - FORCER VISIBILITÉ */
+    font-weight: 700 !important; /* Texte bien gras */
+    font-size: 0.8rem !important;
+    padding: 0.3rem 0.7rem !important; /* Padding pour lisibilité */
+    line-height: 1.2 !important;
     margin: 0 !important;
-    white-space: nowrap; /* Empêcher le retour à la ligne */
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.4) !important;
+    background-color: transparent !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    gap: 0.3rem !important;
+    white-space: nowrap !important; /* Empêcher la rupture de ligne */
+    flex-shrink: 0 !important; /* Empêcher le rétrécissement */
 }
 
-.btn-outline-light:hover {
-    background-color: #444;
-    color: #fff;
-    border-color: #555;
+.navbar .btn-outline-light:hover {
+    background-color: rgba(255, 255, 255, 0.15) !important; /* Fond semi-transparent au survol */
+    color: #ffffff !important;
+    border-color: #ffffff !important;
+}
+
+.navbar .btn-outline-light:focus {
+    outline: none !important;
+    box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.25) !important;
 }
 
 /* Ajustement de la navbar brand pour le thème noir */
 .navbar-brand {
     color: #fff !important;
     font-weight: bold;
-    font-size: 1.25rem !important; /* Taille de police normale */
-    line-height: 1.5 !important; /* Hauteur de ligne normale */
+    font-size: 1rem !important; /* Taille ultra-réduite pour 2 lignes max */
+    line-height: 1.1 !important; /* Hauteur de ligne ultra-réduite */
     margin: 0 !important;
     padding: 0 !important;
 }
@@ -133,24 +143,15 @@ body.sidebar-collapsed .container {
 
 /* Ajustement pour les appareils mobiles */
 @media (max-width: 768px) {
-    body {
-        padding-left: 0 !important; /* Pas de sidebar sur mobile */
-        padding-top: 56px; /* Maintenir l'espacement réduit pour la navbar */
-    }
-    
     .navbar {
-        left: 0 !important;
-        width: 100% !important;
+        left: 0;
         margin-left: 0;
-        padding: 0.25rem 0.5rem !important; /* Padding réduit en mobile */
     }
     
     body .container {
         margin-left: 0;
-        margin-top: 0; /* Pas besoin car le body a le padding-top */
         padding-left: 15px;
         padding-right: 15px;
-        padding-top: 20px; /* Espacement supplémentaire */
     }
     
     .sidebar-glpi.collapsed ~ .navbar {
@@ -161,34 +162,14 @@ body.sidebar-collapsed .container {
 
 /* Styles pour la navbar horizontale */
 .navbar-user-info {
-    display: flex;
-    align-items: center;
-    font-size: 0.875rem; /* Taille de police normale */
-    line-height: 1.5; /* Hauteur de ligne normale */
+    display: flex !important;
+    align-items: center !important; /* Alignement vertical */
+    font-size: 0.8rem; /* Taille ultra-réduite pour 2 lignes max */
+    line-height: 1.2 !important; /* Hauteur de ligne normale */
     margin: 0 !important;
-    padding: 0 !important;
-    gap: 0.5rem; /* Espacement entre les éléments */
-    flex-wrap: wrap; /* Permet le retour à la ligne si nécessaire */
-}
-
-.user-name {
-    color: #fff; /* Texte blanc pour le nom d'utilisateur */
-    font-size: 0.875rem; /* Taille de police normale */
-    line-height: 1.5; /* Hauteur de ligne normale */
-    margin: 0 !important;
-    padding: 0 !important;
-    white-space: nowrap; /* Empêcher le retour à la ligne */
-}
-
-.user-role {
-    background-color: rgba(255, 255, 255, 0.2); /* Badge semi-transparent */
-    color: #fff; /* Texte blanc pour le rôle */
-    font-size: 0.75rem; /* Taille légèrement réduite pour le badge */
-    padding: 0.25rem 0.5rem; /* Padding suffisant */
-    line-height: 1.5; /* Hauteur de ligne normale */
-    margin: 0 !important;
-    border-radius: 0.25rem; /* Coins arrondis */
-    white-space: nowrap; /* Empêcher le retour à la ligne */
+    padding: 0 0.5rem !important;
+    gap: 0.5rem !important; /* Espacement entre éléments */
+    white-space: nowrap !important; /* Empêcher le retour à la ligne */
 }
 
 /* Cacher le texte (labels) quand la sidebar est réduite, pour éviter le débordement */
@@ -388,17 +369,8 @@ body.d-flex {
     border-radius: 8px;
     padding: 15px;
     margin-bottom: 20px;
-    margin-top: 0; /* Pas de marge supérieure supplémentaire, géré par le container */
     box-shadow: 0 0 10px rgba(0,0,0,0.05);
     transition: margin-left 0.3s ease;
-}
-
-/* Style spécifique pour le titre h1 dans main-content pour éviter qu'il soit caché par la navbar */
-.main-content h1:first-child {
-    margin-top: 15px; /* Marge supérieure pour s'assurer que le titre n'est pas caché */
-    padding-top: 0;
-    margin-bottom: 25px; /* Espacement sous le titre */
-    scroll-margin-top: 80px; /* Pour les ancres, garder l'espacement */
 }
 
 /* Ne pas décaler le contenu lors du collapse: marge gauche toujours 0 (le padding du body crée l'espace sidebar) */
@@ -590,19 +562,12 @@ body.sidebar-collapsed .main-content {
 
 /* Responsive */
 @media (max-width: 768px) {
-    body {
-        padding-left: 0 !important; /* Pas de sidebar sur mobile */
-        padding-top: 80px; /* Maintenir l'espacement pour la navbar */
-    }
-    
     body .container {
-        margin-top: 0; /* Pas besoin car le body a le padding-top */
-        padding-top: 30px; /* Espacement supplémentaire */
+        margin-top: 50px;
     }
     
     .navbar {
-        left: 0 !important;
-        width: 100% !important;
+        left: 0;
     }
     
     body:not(.sidebar-collapsed) {
@@ -1514,6 +1479,12 @@ div.col-md-6:nth-child(2) {
 
 div.col-md-6:nth-child(1) {
   top: 23px;
+}
+
+/* Styles pour la navbar */
+.navbar {
+  right: 250px;
+  margin-right: -251px;
 }
 
 /* Modification de la couleur de fond pour bg-primary */

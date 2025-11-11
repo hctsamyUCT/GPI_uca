@@ -61,17 +61,20 @@ function getFilterForm($type, $filters = []) {
                 </select>
             </div>';
 
+            // Génération dynamique de la liste des processeurs depuis la table `unite`
+            $processors = $pdo->query("SELECT DISTINCT processeur FROM unite WHERE supprime_le IS NULL ORDER BY processeur")->fetchAll();
             $html .= '<div class="col-md-3 mb-3">
                 <label>Processeur</label>
                 <select name="processeur" class="form-control">
-                    <option value="">Tous</option>
-                    <option value="Intel_i3" ' . (isset($filters['processeur']) && $filters['processeur'] == 'Intel_i3' ? 'selected' : '') . '>Intel i3</option>
-                    <option value="Intel_i5" ' . (isset($filters['processeur']) && $filters['processeur'] == 'Intel_i5' ? 'selected' : '') . '>Intel i5</option>
-                    <option value="Intel_i7" ' . (isset($filters['processeur']) && $filters['processeur'] == 'Intel_i7' ? 'selected' : '') . '>Intel i7</option>
-                    <option value="AMD_Ryzen_5" ' . (isset($filters['processeur']) && $filters['processeur'] == 'AMD_Ryzen_5' ? 'selected' : '') . '>AMD Ryzen 5</option>
-                    <option value="AMD_Ryzen_7" ' . (isset($filters['processeur']) && $filters['processeur'] == 'AMD_Ryzen_7' ? 'selected' : '') . '>AMD Ryzen 7</option>
-                </select>
-            </div>';
+                    <option value="">Tous</option>';
+
+            foreach ($processors as $proc) {
+                $val = $proc['processeur'];
+                $label = str_replace('_', ' ', $val);
+                $html .= '<option value="' . htmlspecialchars($val) . '" ' . (isset($filters['processeur']) && $filters['processeur'] == $val ? 'selected' : '') . '>' . htmlspecialchars($label) . '</option>';
+            }
+
+            $html .= '</select></div>';
 
             $html .= '<div class="col-md-3 mb-3">
                 <label>Type Disque 1</label>
