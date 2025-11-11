@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Hôte : 127.0.0.1:3306
--- Généré le : lun. 07 juil. 2025 à 10:53
+-- Généré le : mar. 11 nov. 2025 à 08:53
 -- Version du serveur : 9.1.0
 -- Version de PHP : 8.3.14
 
@@ -46,7 +46,20 @@ CREATE TABLE IF NOT EXISTS `appareils` (
   KEY `type` (`type`),
   KEY `etat` (`etat`),
   KEY `supprime_le` (`supprime_le`)
-) ENGINE=InnoDB AUTO_INCREMENT=123 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=128 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Déchargement des données de la table `appareils`
+--
+
+INSERT INTO `appareils` (`id_appareil`, `type`, `modele`, `numero_inventaire`, `etat`, `id_marque`, `id_salle`, `date_ajout`, `supprime_le`) VALUES
+(121, 'Imprimante', 'B40-06', 'IMP/001/2025', 'Operationnel', 5, 4, '2025-07-07 10:39:38', NULL),
+(122, 'Projecteur', 'AIE-YT90', 'PRJ/001/2025', 'Operationnel', 5, 4, '2025-07-07 10:45:37', NULL),
+(123, 'Imprimante', 'EY-85003', 'IMP/002/2025', 'Operationnel', 4, 4, '2025-08-11 19:34:42', NULL),
+(124, 'Projecteur', 'EY-OZB7', 'PRJ/002/2025', 'En panne', 9, NULL, '2025-08-14 17:29:58', NULL),
+(125, 'Imprimante', 'epy-49', 'IMP/003/2025', 'En panne', 4, NULL, '2025-08-14 17:36:48', NULL),
+(126, 'Imprimante', 'EY-UI0', 'IMP/004/2025', 'Operationnel', 5, 5, '2025-08-14 18:34:17', NULL),
+(127, 'Projecteur', 'TUOE-I3', 'PRJ/003/2025', 'Operationnel', 4, NULL, '2025-08-14 18:45:09', NULL);
 
 --
 -- Déclencheurs `appareils`
@@ -119,15 +132,7 @@ CREATE TABLE IF NOT EXISTS `archives_appareils` (
   `date_archive` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id_archive`),
   KEY `numero_inventaire` (`numero_inventaire`)
-) ENGINE=InnoDB AUTO_INCREMENT=131 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
---
--- Déchargement des données de la table `archives_appareils`
---
-
-INSERT INTO `archives_appareils` (`id_archive`, `id_appareil`, `type`, `modele`, `numero_inventaire`, `etat`, `id_marque`, `nom_marque`, `id_salle`, `nom_salle`, `date_ajout`, `date_archive`) VALUES
-(129, 122, 'Projecteur', 'yyy', 'PRJ/001/2025', 'Operationnel', 5, 'Acer', 10, 'Bureau BBA', '2025-07-07 10:45:37', '2025-07-07 10:49:40'),
-(130, 121, 'Imprimante', 'ttt', 'IMP/001/2025', 'Operationnel', 5, 'Acer', NULL, NULL, '2025-07-07 10:39:38', '2025-07-07 10:49:42');
+) ENGINE=InnoDB AUTO_INCREMENT=132 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
 
@@ -149,7 +154,7 @@ CREATE TABLE IF NOT EXISTS `archives_peripherique` (
   `est_affecte` tinyint(1) DEFAULT NULL,
   `date_archive` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id_archive`)
-) ENGINE=InnoDB AUTO_INCREMENT=38 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=40 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 --
 -- Déchargement des données de la table `archives_peripherique`
@@ -183,7 +188,8 @@ INSERT INTO `archives_peripherique` (`id_archive`, `id_peripherique`, `type`, `i
 (34, 32, 'Souris', 4, 'Brother', 'sbua293', 'Operationnel', '2025-02-26 08:46:08', NULL, 1, '2025-06-29 08:42:08'),
 (35, 33, 'Souris', 4, 'Brother', 'sia293', 'Operationnel', '2025-02-26 08:46:17', NULL, 1, '2025-06-29 08:42:08'),
 (36, 34, 'Clavier', 5, 'Acer', 'ssabij	', 'Operationnel', '2025-04-16 07:32:42', NULL, 0, '2025-06-29 08:42:08'),
-(37, 37, 'Souris', 6, 'Dell', 'SRI/001/2025', 'Operationnel', '2025-06-29 09:57:01', NULL, 0, '2025-06-29 08:57:21');
+(37, 37, 'Souris', 6, 'Dell', 'SRI/001/2025', 'Operationnel', '2025-06-29 09:57:01', NULL, 0, '2025-06-29 08:57:21'),
+(39, 42, 'Clavier', 5, 'Acer', '', 'Operationnel', '2025-08-14 18:39:20', NULL, 0, '2025-08-14 17:52:25');
 
 -- --------------------------------------------------------
 
@@ -209,23 +215,25 @@ CREATE TABLE IF NOT EXISTS `archives_unite` (
   `est_affecte` tinyint(1) DEFAULT NULL,
   `date_archive` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id_archive`)
-) ENGINE=InnoDB AUTO_INCREMENT=28 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=36 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 --
 -- Déchargement des données de la table `archives_unite`
 --
 
 INSERT INTO `archives_unite` (`id_archive`, `id_unite`, `numero_inventaire`, `ram`, `processeur`, `disque_dur_1_type`, `disque_dur_1_capacite`, `disque_dur_2_type`, `disque_dur_2_capacite`, `etat`, `date_achat`, `date_ajout`, `supprime_le`, `est_affecte`, `date_archive`) VALUES
-(16, 13, 'b3bb', '2 GB', 'INTEL_CORE_I3', 'SSD', '70 GB', NULL, NULL, 'Operationnel', NULL, '2025-02-19 16:13:43', NULL, 1, '2025-03-02 09:04:27'),
 (17, 10, 'GZZVHZH', '16 GB', 'INTEL_CORE_I3', 'SSD', '120 GB', NULL, NULL, 'Operationnel', '2025-02-19', '2025-02-19 16:05:40', NULL, 0, '2025-06-29 08:41:43'),
-(18, 11, 'a1aa', '4 GB', 'INTEL_CORE_I3', 'HDD', '120 GB', NULL, NULL, 'En panne', NULL, '2025-02-19 16:08:44', NULL, 0, '2025-06-29 08:41:43'),
-(19, 12, 'b2bb', '2 GB', 'INTEL_CORE_I5', 'SSD', '70 GB', NULL, NULL, 'Operationnel', NULL, '2025-02-19 16:11:58', NULL, 0, '2025-06-29 08:41:43'),
 (20, 14, 'd2dd', '2 GB', 'INTEL_CORE_I3', 'SSD', '500 GB', NULL, NULL, 'Operationnel', NULL, '2025-02-19 16:14:01', NULL, 1, '2025-06-29 08:41:43'),
 (21, 15, 't5dd', '4 GB', 'INTEL_CORE_I3', 'SSD', '120 GB', NULL, NULL, 'En panne', NULL, '2025-02-19 16:14:23', NULL, 1, '2025-06-29 08:41:43'),
 (22, 16, 'jsnals', '4 GB', 'INTEL_CORE_I5', 'SSD', '70 GB', NULL, NULL, 'Operationnel', NULL, '2025-02-20 06:49:46', NULL, 1, '2025-06-29 08:41:43'),
 (23, 17, 'eefne', '4 GB', 'INTEL_CORE_I5', 'SSD', '120 GB', NULL, NULL, 'En panne', NULL, '2025-02-20 08:24:03', NULL, 1, '2025-06-29 08:41:43'),
 (24, 18, 'tensks', '2 GB', 'INTEL_CORE_I3', 'SSD', '70 GB', 'SSD', '120 GB', 'En panne', '2001-01-01', '2025-02-26 08:40:52', NULL, 1, '2025-06-29 08:41:43'),
-(25, 20, 'UNT/002/2025', '8 GB', 'INTEL_CORE_I5', 'SSD', '120 GB', NULL, NULL, 'Operationnel', '2026-06-29', '2025-06-29 09:50:04', NULL, 0, '2025-06-29 08:50:35');
+(25, 20, 'UNT/002/2025', '8 GB', 'INTEL_CORE_I5', 'SSD', '120 GB', NULL, NULL, 'Operationnel', '2026-06-29', '2025-06-29 09:50:04', NULL, 0, '2025-06-29 08:50:35'),
+(28, 23, 'UNT/001/2011', '2 GB', 'INTEL_CORE_I5', 'HDD', '120 GB', NULL, NULL, 'Operationnel', '2011-01-01', '2025-07-07 07:41:04', NULL, 0, '2025-07-07 11:07:56'),
+(29, 13, 'b3bb', '2 GB', 'INTEL_CORE_I3', 'SSD', '70 GB', NULL, NULL, 'Operationnel', NULL, '2025-02-19 16:13:43', NULL, 1, '2025-08-11 19:41:40'),
+(33, 25, 'UNT/004/2025', '16 GB', 'INTEL_CORE_I7', 'SSD', '120 GB', NULL, NULL, 'Operationnel', '2025-11-06', '2025-11-06 21:38:43', NULL, 0, '2025-11-06 20:48:37'),
+(34, 12, 'b2bb', '16 GB', 'INTEL_CORE_I5', 'SSD', '70 GB', NULL, NULL, 'Operationnel', NULL, '2025-02-19 16:11:58', NULL, 0, '2025-11-06 20:54:28'),
+(35, 19, 'UNT/001/2025', '4 GB', 'INTEL_CORE_I3', 'HDD', '70 GB', NULL, NULL, 'Operationnel', '2025-06-29', '2025-06-29 09:49:18', NULL, 1, '2025-11-06 20:58:26');
 
 -- --------------------------------------------------------
 
@@ -244,7 +252,7 @@ CREATE TABLE IF NOT EXISTS `interventions` (
   PRIMARY KEY (`id_intervention`),
   KEY `id_ticket` (`id_ticket`),
   KEY `id_user` (`id_user`)
-) ENGINE=InnoDB AUTO_INCREMENT=18 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=20 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
 
@@ -295,7 +303,7 @@ CREATE TABLE IF NOT EXISTS `peripherique` (
   PRIMARY KEY (`id_peripherique`),
   UNIQUE KEY `numero_inventaire` (`numero_inventaire`),
   KEY `id_marque` (`id_marque`)
-) ENGINE=InnoDB AUTO_INCREMENT=41 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=47 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 --
 -- Déchargement des données de la table `peripherique`
@@ -306,7 +314,12 @@ INSERT INTO `peripherique` (`id_peripherique`, `type`, `id_marque`, `numero_inve
 (36, 'Clavier', 5, 'CLA/002/2025', 'Operationnel', '2025-06-29 09:56:47', NULL, 1),
 (38, 'Ecran', 6, 'ECR/001/2025', 'Operationnel', '2025-06-29 09:57:15', NULL, 1),
 (39, 'Ecran', 6, 'ECR/002/2025', 'Operationnel', '2025-06-29 09:57:33', NULL, 1),
-(40, 'Ecran', 6, 'ECR/003/2025', 'Operationnel', '2025-06-29 12:04:20', NULL, 0);
+(40, 'Ecran', 6, 'ECR/003/2025', 'Operationnel', '2025-06-29 12:04:20', NULL, 1),
+(41, 'Souris', 5, '', 'Operationnel', '2025-08-11 20:42:47', NULL, 1),
+(43, 'Clavier', 5, 'CLA/003/2025', 'Operationnel', '2025-08-14 18:52:36', NULL, 1),
+(44, 'Clavier', 4, 'CLA/004/2025', 'Operationnel', '2025-08-14 18:52:57', NULL, 0),
+(45, 'Clavier', 4, 'CLA/005/2025', 'Operationnel', '2025-08-14 19:35:20', NULL, 1),
+(46, 'Ecran', 5, 'ECR/004/2025', 'Operationnel', '2025-08-14 19:45:59', NULL, 1);
 
 --
 -- Déclencheurs `peripherique`
@@ -359,16 +372,19 @@ CREATE TABLE IF NOT EXISTS `poste` (
   PRIMARY KEY (`id_poste`),
   UNIQUE KEY `unique_nom_poste_par_salle` (`nom_poste`,`id_salle`),
   KEY `id_salle` (`id_salle`)
-) ENGINE=InnoDB AUTO_INCREMENT=22 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=26 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 --
 -- Déchargement des données de la table `poste`
 --
 
 INSERT INTO `poste` (`id_poste`, `nom_poste`, `id_salle`, `date_creation`, `etat`) VALUES
-(19, 'poste 01', 1, '2025-06-29 09:58:03', 'opérationnel'),
-(20, 'poste 002', 1, '2025-06-29 11:55:36', 'opérationnel'),
-(21, 'poste 03', 1, '2025-06-29 11:55:56', 'opérationnel');
+(19, 'poste 01', 4, '2025-06-29 09:58:03', 'opérationnel'),
+(21, 'poste 03', 4, '2025-06-29 11:55:56', 'opérationnel'),
+(22, 'poste 2', 4, '2025-08-11 20:44:09', 'en_panne'),
+(23, 'poste 5', 5, '2025-08-14 18:38:20', 'opérationnel'),
+(24, 'poste 4', 4, '2025-08-14 19:47:27', 'opérationnel'),
+(25, 'poste19', 10, '2025-11-10 01:12:11', 'opérationnel');
 
 -- --------------------------------------------------------
 
@@ -393,7 +409,12 @@ INSERT INTO `poste_peripherique` (`id_poste`, `id_peripherique`) VALUES
 (19, 35),
 (21, 36),
 (19, 38),
-(21, 39);
+(21, 39),
+(25, 40),
+(24, 41),
+(24, 43),
+(25, 45),
+(24, 46);
 
 --
 -- Déclencheurs `poste_peripherique`
@@ -461,9 +482,8 @@ CREATE TABLE IF NOT EXISTS `poste_unite` (
 --
 
 INSERT INTO `poste_unite` (`id_poste`, `id_unite`) VALUES
-(19, 19),
-(20, 21),
-(21, 22);
+(19, 21),
+(22, 26);
 
 --
 -- Déclencheurs `poste_unite`
@@ -554,7 +574,7 @@ CREATE TABLE IF NOT EXISTS `salles` (
   `groupe` enum('Administratif','Etude','Cisco') CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   PRIMARY KEY (`id_salle`),
   UNIQUE KEY `unique_salle_etage` (`nom_salle`,`etage`)
-) ENGINE=InnoDB AUTO_INCREMENT=17 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=18 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
 -- Déchargement des données de la table `salles`
@@ -565,7 +585,7 @@ INSERT INTO `salles` (`id_salle`, `nom_salle`, `etage`, `groupe`) VALUES
 (2, 'Salle Réseau Cisco 2', '3', 'Cisco'),
 (3, 'Salle Informatique', '3', 'Etude'),
 (4, 'Salle d\'Etude 1', '3', 'Etude'),
-(5, 'Salle d\'Etude 2', '3', 'Etude'),
+(5, 'Salle d\'Etude 23', '3', 'Etude'),
 (6, 'Salle d\'Etude 3', '3', 'Etude'),
 (7, 'Salle d\'Etude 4', '3', 'Etude'),
 (8, 'Bureau Directeur', '3', 'Administratif'),
@@ -576,7 +596,7 @@ INSERT INTO `salles` (`id_salle`, `nom_salle`, `etage`, `groupe`) VALUES
 (13, 'Salle d\'Etude 7', '2', 'Etude'),
 (14, 'Service Accueil', '2', 'Administratif'),
 (15, 'Comptabilité', '2', 'Administratif'),
-(16, 'test', '2', 'Administratif');
+(17, 'salle traditionnel', '2', 'Etude');
 
 -- --------------------------------------------------------
 
@@ -606,7 +626,7 @@ CREATE TABLE IF NOT EXISTS `tickets` (
   KEY `id_appareil` (`id_appareil`),
   KEY `id_peripherique` (`id_peripherique`),
   KEY `id_unite` (`id_unite`)
-) ENGINE=InnoDB AUTO_INCREMENT=70 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=82 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
 -- Déclencheurs `tickets`
@@ -645,17 +665,18 @@ CREATE TABLE IF NOT EXISTS `unite` (
   `est_affecte` tinyint(1) DEFAULT '0',
   PRIMARY KEY (`id_unite`),
   UNIQUE KEY `numero_inventaire` (`numero_inventaire`)
-) ENGINE=InnoDB AUTO_INCREMENT=24 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=27 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 --
 -- Déchargement des données de la table `unite`
 --
 
 INSERT INTO `unite` (`id_unite`, `numero_inventaire`, `ram`, `processeur`, `disque_dur_1_type`, `disque_dur_1_capacite`, `disque_dur_2_type`, `disque_dur_2_capacite`, `etat`, `date_achat`, `date_ajout`, `supprime_le`, `est_affecte`) VALUES
-(19, 'UNT/001/2025', '4 GB', 'INTEL_CORE_I3', 'HDD', '70 GB', NULL, NULL, 'Operationnel', '2025-06-29', '2025-06-29 09:49:18', NULL, 1),
-(21, 'UNT/001/2026', '4 GB', 'INTEL_CORE_I3', 'SSD', '120 GB', NULL, NULL, 'Operationnel', '2026-06-29', '2025-06-29 09:51:00', NULL, 1),
-(22, 'UNT/002/2025', '4 GB', 'INTEL_CORE_I3', 'SSD', '70 GB', NULL, NULL, 'Operationnel', '2025-06-29', '2025-06-29 09:51:22', NULL, 1),
-(23, 'UNT/001/2011', '2 GB', 'INTEL_CORE_I5', 'HDD', '120 GB', NULL, NULL, 'Operationnel', '2011-01-01', '2025-07-07 07:41:04', NULL, 0);
+(11, 'a1aa', '4 GB', 'INTEL_CORE_I3', 'HDD', '120 GB', NULL, NULL, 'En panne', NULL, '2025-02-19 16:08:44', NULL, 0),
+(21, 'UNT/001/2026', '8 GB', 'INTEL_CORE_I3', 'SSD', '120 GB', NULL, NULL, 'Operationnel', '2026-06-29', '2025-06-29 09:51:00', NULL, 1),
+(22, 'UNT/002/2025', '8 GB', 'INTEL_CORE_I3', 'SSD', '70 GB', NULL, NULL, 'Operationnel', '2025-06-29', '2025-06-29 09:51:22', NULL, 0),
+(24, 'UNT/003/2025', '16 GB', 'INTEL_CORE_I7', 'SSD', '70 GB', NULL, NULL, 'Operationnel', '2025-08-11', '2025-08-11 20:42:22', NULL, 1),
+(26, 'UNT/004/2025', '2 GB', 'INTEL_CORE_I9', 'SSD', '70 GB', 'SSD', '70 GB', 'Operationnel', '2025-01-01', '2025-11-11 09:33:35', NULL, 1);
 
 --
 -- Déclencheurs `unite`
@@ -718,7 +739,7 @@ CREATE TABLE IF NOT EXISTS `users` (
   UNIQUE KEY `code_utilisateur` (`code_utilisateur`),
   KEY `fk_users_role` (`id_role`),
   KEY `idx_code_utilisateur` (`code_utilisateur`)
-) ENGINE=InnoDB AUTO_INCREMENT=22 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=23 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
 -- Déchargement des données de la table `users`

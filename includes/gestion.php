@@ -355,7 +355,7 @@ try { // Début du bloc de gestion d'erreurs
                 <div class="card-body">
                     <form method="POST" action="gestion.php?action=ajouter_unite" class="needs-validation" novalidate>
                         <div class="form-group">
-                            <label for="ram">RAM :</label>
+                                $postes = $pdo->prepare("\n                                    SELECT p.id_poste, p.nom_poste, s.nom_salle\n                                    FROM poste p\n                                    JOIN salles s ON p.id_salle = s.id_salle\n                                    WHERE p.id_poste NOT IN (\n                                        SELECT id_poste FROM poste_unite\n                                    )\n                                    AND p.id_poste NOT IN (\n                                        SELECT pp.id_poste\n                                        FROM poste_peripherique pp\n                                        JOIN peripherique per ON pp.id_peripherique = per.id_peripherique\n                                        WHERE per.type = ? AND pp.id_peripherique != ?\n                                    )\n                                    ORDER BY p.nom_poste\n                                ");
                             <select class="form-control" id="ram" name="ram" required>
                                 <option value="">Sélectionnez la RAM</option>
                                 <option value="2 GB">2 GB</option>
@@ -870,43 +870,71 @@ try { // Début du bloc de gestion d'erreurs
                         exit;
                     }
                 }
+                // Préparer les valeurs postales en évitant les index non définis
+                $numero_inventaire = isset($_POST['numero_inventaire']) ? trim($_POST['numero_inventaire']) : '';
+                $etat = $_POST['etat'] ?? 'Operationnel';
 
-                // Vérification numéro inventaire
-                $check = $pdo->prepare("SELECT id_peripherique FROM peripherique WHERE numero_inventaire = ? AND id_peripherique != ?");
-                $check->execute([$_POST['numero_inventaire'], $id]);
-                if ($check->fetch()) {
-                    header("Location: ../pages/common/Gestion_peripherique.php?erreur=Numéro existant&id=$id");
+                try {
+                    // Démarrer une transaction pour éviter les modifications partielles
+                    $pdo->beginTransaction();
+
+                    // Vérification numéro inventaire (si renseigné)
+                    if ($numero_inventaire !== '') {
+                        $check = $pdo->prepare("SELECT id_peripherique FROM peripherique WHERE numero_inventaire = ? AND id_peripherique != ?");
+                        $check->execute([$numero_inventaire, $id]);
+                        if ($check->fetch()) {
+                            // Conflit sur le numéro
+                            $pdo->rollBack();
+                            header("Location: ../pages/common/Gestion_peripherique.php?erreur=Numéro existant&id=$id");
+                            exit;
+                        }
+                    }
+
+                    // Mise à jour
+                    $stmt = $pdo->prepare("UPDATE peripherique SET
+                        type = ?,
+                        id_marque = ?,
+                        numero_inventaire = ?,
+                        etat = ?
+                        WHERE id_peripherique = ?
+                    ");
+                    $stmt->execute([
+                        $_POST['type'],
+                        $_POST['id_marque'],
+                        $numero_inventaire,
+                        $etat,
+                        $id
+                    ]);
+
+                    // Gestion affectation poste : n'exécuter que si l'affectation a changé
+                    $current_poste = isset($periph['id_poste']) ? (int)$periph['id_poste'] : null;
+                    $new_poste = (isset($_POST['id_poste']) && $_POST['id_poste'] !== '') ? (int)$_POST['id_poste'] : null;
+
+                    if ($new_poste !== $current_poste) {
+                        if ($new_poste !== null) {
+                            $stmt = $pdo->prepare("REPLACE INTO poste_peripherique (id_poste, id_peripherique) VALUES (?, ?)");
+                            $stmt->execute([$new_poste, $id]);
+                        } else {
+                            $stmt = $pdo->prepare("DELETE FROM poste_peripherique WHERE id_peripherique = ?");
+                            $stmt->execute([$id]);
+                        }
+                    }
+
+                    // Tout OK
+                    $pdo->commit();
+                    header('Location: ../pages/common/Gestion_peripherique.php?succes=1');
+                    exit;
+                } catch (PDOException $e) {
+                    // Annuler la transaction si elle est active
+                    if ($pdo->inTransaction()) {
+                        $pdo->rollBack();
+                    }
+                    // Rediriger vers la page des périphériques en affichant l'erreur retournée
+                    // Si le message contient des indications métiers (trigger), on le transmet
+                    $msg = $e->getMessage();
+                    header('Location: ../pages/common/Gestion_peripherique.php?erreur=' . urlencode($msg) . '&id=' . $id);
                     exit;
                 }
-
-                // Mise à jour
-                $stmt = $pdo->prepare("UPDATE peripherique SET
-                    type = ?,
-                    id_marque = ?,
-                    numero_inventaire = ?,
-                    etat = ?
-                    WHERE id_peripherique = ?
-                ");
-                
-                $stmt->execute([
-                    $_POST['type'],
-                    $_POST['id_marque'],
-                    $_POST['numero_inventaire'],
-                    $_POST['etat'] ?? 'Operationnel',
-                    $id
-                ]);
-
-                // Gestion affectation poste
-                if (!empty($_POST['id_poste'])) {
-                    $stmt = $pdo->prepare("REPLACE INTO poste_peripherique (id_poste, id_peripherique) VALUES (?, ?)");
-                    $stmt->execute([$_POST['id_poste'], $id]);
-                } else {
-                    $stmt = $pdo->prepare("DELETE FROM poste_peripherique WHERE id_peripherique = ?");
-                    $stmt->execute([$id]);
-                }
-
-                header('Location: ../pages/common/Gestion_peripherique.php?succes=1');
-                exit;
             }
 
             // Affichage formulaire
@@ -947,24 +975,37 @@ try { // Début du bloc de gestion d'erreurs
                         </div>
 
                         <div class="form-group">
+                            <label>Numéro d'inventaire :</label>
+                            <input type="text" class="form-control" name="numero_inventaire" value="<?= htmlspecialchars($periph['numero_inventaire']) ?>">
+                        </div>
+
+                        <div class="form-group">
                             <label>Affecter au poste :</label>
                             <select class="form-control" name="id_poste">
                                 <option value="">Non affecté</option>
                                 <?php
+                                // Exclure les postes liés à une unité
+                                // et ceux qui ont déjà un périphérique du même type
+                                // (sauf si c'est le périphérique que l'on modifie)
                                 $postes = $pdo->prepare("
                                     SELECT p.id_poste, p.nom_poste, s.nom_salle
                                     FROM poste p
                                     JOIN salles s ON p.id_salle = s.id_salle
                                     WHERE p.id_poste NOT IN (
-                                        SELECT id_poste
-                                        FROM poste_unite
+                                        SELECT id_poste FROM poste_unite
+                                    )
+                                    AND p.id_poste NOT IN (
+                                        SELECT pp.id_poste
+                                        FROM poste_peripherique pp
+                                        JOIN peripherique per ON pp.id_peripherique = per.id_peripherique
+                                        WHERE per.type = ? AND pp.id_peripherique != ?
                                     )
                                     ORDER BY p.nom_poste
                                 ");
-                                $postes->execute([]); // Pas de paramètre à passer ici pour l'ajout
+                                $postes->execute([$periph['type'], $periph['id_peripherique']]);
                                 while ($poste = $postes->fetch()) {
                                 ?>
-                                <option value="<?= $poste['id_poste'] ?>" <?= $poste['id_poste'] == $periph['id_poste'] ? 'selected' : '' ?>>
+                                <option value="<?= $poste['id_poste'] ?>" <?= $poste['id_poste'] == $periph['id_poste'] ? 'selected' : '' ?> >
                                     <?= htmlspecialchars($poste['nom_poste'] . ' - ' . $poste['nom_salle']) ?>
                                 </option>
                                 <?php } ?>
