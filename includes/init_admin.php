@@ -1,4 +1,4 @@
-<?php
+w<?php
 require_once 'functions.php';
 
 // Configuration de la session
